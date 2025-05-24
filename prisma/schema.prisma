@@ -39,8 +39,8 @@ model Engineer {
   name      String
   email     String   @unique
   phone     String
-  specialty String[]
-  status    String   @default("active")
+  city      String
+  status    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -1,0 +1,124 @@
+{
+  "collections": [
+    {
+      "id": "1",
+      "customerName": "Rahul Kumar",
+      "mobileNo": "9876543210",
+      "city": "Kanpur Nagar",
+      "service": "AC Repair",
+      "appointmentTime": "2024-02-15T10:30:00Z",
+      "amount": 1500,
+      "status": "pending",
+      "createdAt": "2024-02-14T15:30:00Z",
+      "updatedAt": "2024-02-14T15:30:00Z"
+    },
+    {
+      "id": "2",
+      "customerName": "Priya Singh",
+      "mobileNo": "8765432109",
+      "city": "Kanpur Nagar",
+      "service": "Refrigerator Service",
+      "appointmentTime": "2024-02-16T14:00:00Z",
+      "amount": 2000,
+      "status": "collected",
+      "createdAt": "2024-02-14T09:15:00Z",
+      "updatedAt": "2024-02-16T15:00:00Z"
+    },
+    {
+      "id": "3",
+      "customerName": "Amit Sharma",
+      "mobileNo": "7654321098",
+      "city": "Kanpur Nagar",
+      "service": "Washing Machine Repair",
+      "appointmentTime": "2024-02-15T16:30:00Z",
+      "amount": 1800,
+      "status": "failed",
+      "createdAt": "2024-02-14T11:45:00Z",
+      "updatedAt": "2024-02-15T17:00:00Z"
+    },
+    {
+      "id": "4",
+      "customerName": "Neha Gupta",
+      "mobileNo": "6543210987",
+      "city": "Kanpur Nagar",
+      "service": "Microwave Repair",
+      "appointmentTime": "2024-02-17T11:00:00Z",
+      "amount": 1200,
+      "status": "pending",
+      "createdAt": "2024-02-15T13:20:00Z",
+      "updatedAt": "2024-02-15T13:20:00Z"
+    },
+    {
+      "id": "5",
+      "customerName": "Mohit Verma",
+      "mobileNo": "5432109876",
+      "city": "Kanpur Nagar",
+      "service": "TV Repair",
+      "appointmentTime": "2024-02-16T09:30:00Z",
+      "amount": 2500,
+      "status": "collected",
+      "createdAt": "2024-02-14T16:40:00Z",
+      "updatedAt": "2024-02-16T10:30:00Z"
+    },
+    {
+      "id": "6",
+      "customerName": "Anjali Mishra",
+      "mobileNo": "4321098765",
+      "city": "Kanpur Nagar",
+      "service": "Water Purifier Service",
+      "appointmentTime": "2024-02-17T13:30:00Z",
+      "amount": 1000,
+      "status": "pending",
+      "createdAt": "2024-02-15T10:10:00Z",
+      "updatedAt": "2024-02-15T10:10:00Z"
+    },
+    {
+      "id": "7",
+      "customerName": "Rajesh Yadav",
+      "mobileNo": "3210987654",
+      "city": "Kanpur Nagar",
+      "service": "AC Installation",
+      "appointmentTime": "2024-02-18T15:00:00Z",
+      "amount": 3500,
+      "status": "pending",
+      "createdAt": "2024-02-15T14:25:00Z",
+      "updatedAt": "2024-02-15T14:25:00Z"
+    },
+    {
+      "id": "8",
+      "customerName": "Pooja Patel",
+      "mobileNo": "2109876543",
+      "city": "Kanpur Nagar",
+      "service": "Geyser Repair",
+      "appointmentTime": "2024-02-16T12:30:00Z",
+      "amount": 1300,
+      "status": "collected",
+      "createdAt": "2024-02-14T12:50:00Z",
+      "updatedAt": "2024-02-16T13:30:00Z"
+    },
+    {
+      "id": "9",
+      "customerName": "Sanjay Kumar",
+      "mobileNo": "1098765432",
+      "city": "Kanpur Nagar",
+      "service": "Refrigerator Repair",
+      "appointmentTime": "2024-02-17T10:00:00Z",
+      "amount": 1900,
+      "status": "failed",
+      "createdAt": "2024-02-15T09:30:00Z",
+      "updatedAt": "2024-02-17T11:00:00Z"
+    },
+    {
+      "id": "10",
+      "customerName": "Meera Singh",
+      "mobileNo": "9087654321",
+      "city": "Kanpur Nagar",
+      "service": "AC Service",
+      "appointmentTime": "2024-02-18T09:00:00Z",
+      "amount": 1600,
+      "status": "pending",
+      "createdAt": "2024-02-15T16:15:00Z",
+      "updatedAt": "2024-02-15T16:15:00Z"
+    }
+  ]
+}

@@ -1,23 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import engineersData from "@/data/engineers.json";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const status = searchParams.get("status");
-    const specialty = searchParams.get("specialty");
-
-    const where = {
-      ...(status && { status }),
-      ...(specialty && { specialty: { has: specialty } }),
-    };
-
-    const engineers = await prisma.engineer.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
-
-    return NextResponse.json(engineers);
+    return NextResponse.json(engineersData.engineers);
   } catch (error) {
     console.error("Error fetching engineers:", error);
     return NextResponse.json(
@@ -30,20 +16,15 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+    // In a real application, you would save this to a database
+    // For now, we'll just return the data as if it was saved
+    const newEngineer = {
+      id: String(engineersData.engineers.length + 1),
+      ...data,
+      status: true,
+    };
 
-    // Ensure specialty is an array
-    if (data.specialty && !Array.isArray(data.specialty)) {
-      data.specialty = [data.specialty];
-    }
-
-    const engineer = await prisma.engineer.create({
-      data: {
-        ...data,
-        specialty: data.specialty || [], // Default to empty array if not provided
-      },
-    });
-
-    return NextResponse.json(engineer);
+    return NextResponse.json(newEngineer, { status: 201 });
   } catch (error) {
     console.error("Error creating engineer:", error);
     return NextResponse.json(

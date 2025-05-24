@@ -1,0 +1,60 @@
+{
+  "engineers": [
+    {
+      "id": "1",
+      "name": "Rishabh Ramadevi",
+      "email": "Rishabh@gamial.com",
+      "phone": "8299528556",
+      "city": "Kanpur Nagar",
+      "status": true
+    },
+    {
+      "id": "2",
+      "name": "Hassan",
+      "email": "Hassan@Gmail.com",
+      "phone": "9936009583",
+      "city": "Kanpur Nagar",
+      "status": true
+    },
+    {
+      "id": "3",
+      "name": "Naushad",
+      "email": "Naushad@gmail.com",
+      "phone": "7897383149",
+      "city": "Kanpur Nagar",
+      "status": true
+    },
+    {
+      "id": "4",
+      "name": "Abhishek Singh",
+      "email": "abhishek@gmail.com",
+      "phone": "9773825051",
+      "city": "Kanpur Nagar",
+      "status": true
+    },
+    {
+      "id": "5",
+      "name": "Deepak",
+      "email": "Deepak@gmail.com",
+      "phone": "8467998875",
+      "city": "Kanpur Nagar",
+      "status": true
+    },
+    {
+      "id": "6",
+      "name": "Rahul kumar Gupta",
+      "email": "Rahul@gmail.com",
+      "phone": "8318770020",
+      "city": "Kanpur Nagar",
+      "status": true
+    },
+    {
+      "id": "7",
+      "name": "Mohammmd Hasain",
+      "email": "abc@gmail.com",
+      "phone": "7991625689",
+      "city": "Kanpur Nagar",
+      "status": true
+    }
+  ]
+}

@@ -36,7 +36,7 @@ export default function Sidebar({ onThemeToggle, currentTheme }: SidebarProps) {
     {
       title: "Manage Collection",
       icon: <MdPayments className="w-6 h-6" />,
-      path: "/collections",
+      path: "/dashboard/collections",
     },
     {
       title: "Manage Engineer",
@@ -83,7 +83,7 @@ export default function Sidebar({ onThemeToggle, currentTheme }: SidebarProps) {
       <nav className="h-[calc(100vh-4rem)] py-4">
         <ul className="space-y-1 px-2">
           {menuItems.map((item) => {
-            const isActive = pathname === item.path;
+            const isActive = pathname.startsWith(item.path);
             return (
               <li key={item.path}>
                 <Link
