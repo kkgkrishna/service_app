@@ -19,6 +19,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(engineers);
   } catch (error) {
+    console.error("Error fetching engineers:", error);
     return NextResponse.json(
       { error: "Failed to fetch engineers" },
       { status: 500 }
@@ -29,11 +30,22 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+
+    // Ensure specialty is an array
+    if (data.specialty && !Array.isArray(data.specialty)) {
+      data.specialty = [data.specialty];
+    }
+
     const engineer = await prisma.engineer.create({
-      data,
+      data: {
+        ...data,
+        specialty: data.specialty || [], // Default to empty array if not provided
+      },
     });
+
     return NextResponse.json(engineer);
   } catch (error) {
+    console.error("Error creating engineer:", error);
     return NextResponse.json(
       { error: "Failed to create engineer" },
       { status: 500 }
