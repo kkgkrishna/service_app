@@ -1,0 +1,81 @@
+{
+  "stockUsers": [
+    {
+      "id": "1",
+      "name": "Vikram Singh",
+      "email": "vikram@gmail.com",
+      "phone": "9876543210",
+      "city": "Kanpur Nagar",
+      "role": "Warehouse Manager",
+      "status": true,
+      "createdAt": "2024-02-01T10:30:00Z",
+      "updatedAt": "2024-02-01T10:30:00Z"
+    },
+    {
+      "id": "2",
+      "name": "Anita Patel",
+      "email": "anita@gmail.com",
+      "phone": "8765432109",
+      "city": "Kanpur Nagar",
+      "role": "Inventory Clerk",
+      "status": true,
+      "createdAt": "2024-02-02T11:15:00Z",
+      "updatedAt": "2024-02-02T11:15:00Z"
+    },
+    {
+      "id": "3",
+      "name": "Rajesh Kumar",
+      "email": "rajesh@gmail.com",
+      "phone": "7654321098",
+      "city": "Kanpur Nagar",
+      "role": "Stock Supervisor",
+      "status": false,
+      "createdAt": "2024-02-03T09:45:00Z",
+      "updatedAt": "2024-02-03T09:45:00Z"
+    },
+    {
+      "id": "4",
+      "name": "Priya Sharma",
+      "email": "priya@gmail.com",
+      "phone": "6543210987",
+      "city": "Kanpur Nagar",
+      "role": "Inventory Clerk",
+      "status": true,
+      "createdAt": "2024-02-04T14:20:00Z",
+      "updatedAt": "2024-02-04T14:20:00Z"
+    },
+    {
+      "id": "5",
+      "name": "Suresh Verma",
+      "email": "suresh@gmail.com",
+      "phone": "5432109876",
+      "city": "Kanpur Nagar",
+      "role": "Stock Manager",
+      "status": true,
+      "createdAt": "2024-02-05T13:10:00Z",
+      "updatedAt": "2024-02-05T13:10:00Z"
+    },
+    {
+      "id": "6",
+      "name": "Meena Gupta",
+      "email": "meena@gmail.com",
+      "phone": "4321098765",
+      "city": "Kanpur Nagar",
+      "role": "Warehouse Clerk",
+      "status": true,
+      "createdAt": "2024-02-06T15:30:00Z",
+      "updatedAt": "2024-02-06T15:30:00Z"
+    },
+    {
+      "id": "7",
+      "name": "Arun Mishra",
+      "email": "arun@gmail.com",
+      "phone": "3210987654",
+      "city": "Kanpur Nagar",
+      "role": "Stock Supervisor",
+      "status": false,
+      "createdAt": "2024-02-07T12:45:00Z",
+      "updatedAt": "2024-02-07T12:45:00Z"
+    }
+  ]
+}
