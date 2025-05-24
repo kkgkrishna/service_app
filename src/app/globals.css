@@ -2,20 +2,226 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 238.7 83.5% 66.7%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 226.7 70% 55.9%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 226.7 10% 96.1%;
+    --muted-foreground: 226.7 10% 46.9%;
+    --accent: 226.7 70% 96.1%;
+    --accent-foreground: 226.7 70% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 226.7 31.8% 91.4%;
+    --input: 226.7 31.8% 91.4%;
+    --ring: 238.7 83.5% 66.7%;
+    --radius: 0.5rem;
+    --toast-bg: #fff;
+    --toast-color: #1f2937;
+
+    /* Base Colors */
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+
+    /* Light Theme Colors */
+    --gradient-page-bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    --gradient-card-bg: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.95) 100%
+    );
+    --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --gradient-info: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+
+    /* Sidebar and Header Colors - Light Theme */
+    --sidebar-bg: #ffffff;
+    --sidebar-text: #1e293b;
+    --sidebar-hover: #f1f5f9;
+    --sidebar-active: #e2e8f0;
+    --header-bg: #ffffff;
+    --header-text: #1e293b;
+
+    /* Border Colors */
+    --border-light: rgba(255, 255, 255, 0.1);
+    --border-dark: rgba(0, 0, 0, 0.1);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 226.7 100% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 226.7 100% 98%;
+    --primary: 238.7 83.5% 66.7%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 226.7 70% 17.5%;
+    --secondary-foreground: 226.7 100% 98%;
+    --muted: 226.7 32.6% 17.5%;
+    --muted-foreground: 226.7 20.2% 65.1%;
+    --accent: 226.7 32.6% 17.5%;
+    --accent-foreground: 226.7 100% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 226.7 32.6% 17.5%;
+    --input: 226.7 32.6% 17.5%;
+    --ring: 238.7 83.5% 66.7%;
+    --toast-bg: #1f2937;
+    --toast-color: #f3f4f6;
+
+    /* Dark Theme Text Colors */
+    --text-primary: #f8fafc;
+    --text-secondary: #e2e8f0;
+    --text-muted: #cbd5e1;
+
+    /* Dark Theme Colors */
+    --gradient-page-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --gradient-card-bg: linear-gradient(
+      135deg,
+      rgba(30, 41, 59, 0.9) 0%,
+      rgba(30, 41, 59, 0.95) 100%
+    );
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    --gradient-secondary: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    --gradient-success: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+    --gradient-danger: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    --gradient-warning: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    --gradient-info: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+
+    /* Sidebar and Header Colors - Dark Theme */
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #f8fafc;
+    --sidebar-hover: #334155;
+    --sidebar-active: #475569;
+    --header-bg: #1e293b;
+    --header-text: #f8fafc;
+
+    /* Border Colors */
+    --border-light: rgba(255, 255, 255, 0.1);
+    --border-dark: rgba(0, 0, 0, 0.2);
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-[var(--gradient-page-bg)] text-[var(--text-primary)] transition-colors duration-200;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-[var(--text-primary)] font-semibold;
+  }
+
+  p {
+    @apply text-[var(--text-secondary)];
+  }
+
+  label {
+    @apply text-[var(--text-primary)] !important;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply text-[var(--text-primary)] !important;
+  }
+}
+
+/* Glass effect for cards */
+.glass-card {
+  background: var(--gradient-card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-dark);
+  @apply shadow-lg transition-all duration-200;
+}
+
+.dark .glass-card {
+  border-color: var(--border-light);
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-clip-text text-transparent;
+  background-image: var(--gradient-primary);
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Hide scrollbar for mobile devices */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Transitions */
+.theme-transition {
+  @apply transition-all duration-200;
+}
+
+/* Status badges */
+.status-badge {
+  @apply px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.status-badge-pending {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-badge-completed {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-badge-cancelled {
+  @apply bg-red-100 text-red-800;
+}
+
+.dark .status-badge-pending {
+  @apply bg-yellow-900/30 text-yellow-500;
+}
+
+.dark .status-badge-completed {
+  @apply bg-green-900/30 text-green-500;
+}
+
+.dark .status-badge-cancelled {
+  @apply bg-red-900/30 text-red-500;
 }
