@@ -55,15 +55,36 @@ export default function SignupPage() {
         }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.error("Failed to parse JSON response:", jsonError);
+        throw new Error("Server response was not valid JSON");
       }
 
-      toast.success("Account created successfully");
+      // Debug logging
+      console.log("Signup Response Status:", response.status);
+      console.log("Signup Response:", data);
+
+      if (!response.ok) {
+        console.error("Signup failed:", {
+          status: response.status,
+          statusText: response.statusText,
+          data: data,
+        });
+        throw new Error(
+          data?.error || data?.message || "Failed to create account"
+        );
+      }
+
+      toast.success("Account created successfully! Redirecting to login...");
+
+      // Add a small delay before redirecting
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       router.push("/login");
     } catch (error) {
+      console.error("Signup error:", error);
       toast.error(
         error instanceof Error ? error.message : "Failed to create account"
       );

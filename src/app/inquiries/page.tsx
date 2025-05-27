@@ -15,7 +15,7 @@ interface Inquiry {
   callbackTime: string;
   appointmentTime: string;
   amount: number;
-  status: "pending" | "completed" | "cancelled";
+  status: "pending" | "active" | "resolved" | "closed";
 }
 
 interface Filters {
@@ -44,52 +44,25 @@ export default function InquiriesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [totalItems, setTotalItems] = useState(0);
 
-  // Mock API calls - Replace with actual API integration
+  // Fetch inquiries from API
   const fetchInquiries = useCallback(async () => {
     try {
       setIsLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const query = new URLSearchParams();
+      if (filters.status) query.append("status", filters.status);
+      if (filters.search) query.append("search", filters.search);
+      if (filters.from) query.append("from", filters.from);
+      if (filters.to) query.append("to", filters.to);
+      query.append("page", filters.page.toString());
+      query.append("limit", filters.limit.toString());
 
-      // Mock data
-      const mockData = [
-        {
-          id: "INQ024620",
-          customerName: "Pramod yadav",
-          mobileNo: "9559919919",
-          city: "Kanpur Nagar",
-          service: "Split / Window (Deep Cleaning with Jet Pump)",
-          callbackTime: "2024/05/25 09:29",
-          appointmentTime: "2024/05/25 09:29",
-          amount: 599,
-          status: "pending" as const,
-        },
-        {
-          id: "INQ024616",
-          customerName: "Mohamand farman",
-          mobileNo: "8957172187",
-          city: "Kanpur Nagar",
-          service: "Split / Window (Deep Cleaning with Jet Pump)",
-          callbackTime: "2024/05/25 09:34",
-          appointmentTime: "2024/05/23 16:55",
-          amount: 799,
-          status: "completed" as const,
-        },
-        {
-          id: "INQ024615",
-          customerName: "Pragati",
-          mobileNo: "9555817263",
-          city: "Kanpur Nagar",
-          service: "Split / Window (FOAM)",
-          callbackTime: "2024/05/25 09:30",
-          appointmentTime: "2024/05/25 09:30",
-          amount: 699,
-          status: "cancelled" as const,
-        },
-      ];
+      const response = await fetch(`/api/inquiries?${query.toString()}`);
+      const data = await response.json();
 
-      setInquiries(mockData);
-      setTotalItems(mockData.length);
+      if (!response.ok) throw new Error(data.error || "Unknown error");
+
+      setInquiries(data.inquiries || []);
+      setTotalItems(data.total || 0);
     } catch (error) {
       console.error("Error fetching inquiries:", error);
       toast.error("Failed to fetch inquiries");
@@ -100,27 +73,39 @@ export default function InquiriesPage() {
 
   const handleAddInquiry = async (data: any) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error("Failed to create inquiry");
+
       toast.success("Inquiry created successfully");
+      setIsModalOpen(false);
       fetchInquiries();
     } catch (error) {
       console.error("Error creating inquiry:", error);
       toast.error("Failed to create inquiry");
-      throw error;
     }
   };
 
   const handleEditInquiry = async (data: any) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch(`/api/inquiries?id=${data.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error("Failed to update inquiry");
+
       toast.success("Inquiry updated successfully");
+      setIsModalOpen(false);
       fetchInquiries();
     } catch (error) {
       console.error("Error updating inquiry:", error);
       toast.error("Failed to update inquiry");
-      throw error;
     }
   };
 
@@ -129,8 +114,12 @@ export default function InquiriesPage() {
       return;
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch(`/api/inquiries?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to delete inquiry");
+
       toast.success("Inquiry deleted successfully");
       fetchInquiries();
     } catch (error) {
@@ -221,8 +210,9 @@ export default function InquiriesPage() {
               >
                 <option value="">All Status</option>
                 <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="active">Active</option>
+                <option value="resolved">Resolved</option>
+                <option value="closed">Closed</option>
               </select>
             </div>
             <div>
@@ -345,8 +335,12 @@ export default function InquiriesPage() {
                           ${
                             inquiry.status === "pending"
                               ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500"
-                              : inquiry.status === "completed"
+                              : inquiry.status === "active"
                               ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500"
+                              : inquiry.status === "resolved"
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-500"
+                              : inquiry.status === "closed"
+                              ? "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400"
                               : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-500"
                           }`}
                         >

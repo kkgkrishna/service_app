@@ -1,57 +1,49 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+ 
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+ 
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
+  email     String   @unique
   password  String
-  role      String   @default("user")
+  role      Role     @default(USER)
+  inquiries Inquiry[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Inquiry {
-  id              String   @id @default(cuid())
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
   customerName    String
-  mobileNo       String
-  city           String
-  service        String
-  callbackTime   DateTime
+  mobileNo        String
+  city            String
+  service         String
+  callbackTime    DateTime
   appointmentTime DateTime?
-  amount         Float    @default(0)
-  status         String   @default("pending")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  amount          Float    @default(0)
+  status          InquiryStatus @default(PENDING)
+  priority        Priority       @default(MEDIUM)
+  userId          String         @db.ObjectId
+  user            User           @relation(fields: [userId], references: [id])
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
-model Engineer {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  phone     String
-  city      String
-  status    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum Role {
-  USER
-  ADMIN
-  ENGINEER
-}
-
-enum Status {
+enum InquiryStatus {
   PENDING
   ACTIVE
   RESOLVED
@@ -63,4 +55,9 @@ enum Priority {
   MEDIUM
   HIGH
   URGENT
-} 
+}
+
+enum Role {
+  USER
+  ADMIN
+}

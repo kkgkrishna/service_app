@@ -106,8 +106,8 @@ export default function DashboardPage() {
             </h1>
             <span className="text-gray-500 dark:text-gray-400">/ Home</span>
           </div>
-          <button className="px-6 py-2 bg-[#1a237e] text-white rounded hover:bg-[#1a237e]/90 dark:hover:bg-[#1a237e]/70">
-            Refresh
+          <button className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-medium rounded-lg shadow hover:from-indigo-700 hover:to-blue-700 transition">
+            🔄 Refresh
           </button>
         </div>
 
@@ -315,19 +315,15 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="glass-card rounded-xl p-6 hover:shadow-lg transition-all duration-300 group">
-      <div className="flex items-center gap-4">
-        <div
-          className={`text-3xl ${color} group-hover:scale-110 transition-transform`}
-        >
-          {icon}
-        </div>
-        <div>
-          <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-            {title}
-          </h3>
-          <p className={`text-2xl font-bold gradient-text`}>{value}</p>
-        </div>
+    <div className="relative rounded-2xl p-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:shadow-lg transition-shadow">
+      <div className="absolute -top-4 -left-4 w-16 h-16 bg-gradient-to-br from-indigo-500 via-blue-500 to-purple-500 text-white rounded-full flex items-center justify-center text-3xl shadow-md">
+        {icon}
+      </div>
+      <div className="ml-16">
+        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+          {title}
+        </h3>
+        <p className="text-3xl font-extrabold text-gray-900 dark:text-white mt-2">{value}</p>
       </div>
     </div>
   );
@@ -347,20 +343,16 @@ function StatsCard({
   textColor: string;
 }) {
   return (
-    <div
-      className={`glass-card rounded-xl p-6 hover:shadow-lg transition-all duration-300 group`}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className={`text-2xl ${textColor} group-hover:scale-110 transition-transform`}
-        >
+    <div className={`rounded-xl p-4 border border-gray-200 dark:border-gray-700 ${color} hover:shadow-md transition`}>
+      <div className="flex items-center gap-4">
+        <div className={`text-2xl ${textColor} bg-white dark:bg-gray-800 rounded-full p-3 shadow-inner`}>
           {icon}
         </div>
         <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+          <p className="text-xs uppercase tracking-wide font-medium text-gray-600 dark:text-gray-300">
             {title}
           </p>
-          <p className={`text-lg font-semibold gradient-text`}>{value}</p>
+          <p className={`text-xl font-bold ${textColor}`}>{value}</p>
         </div>
       </div>
     </div>

@@ -43,8 +43,17 @@ export default function LoginPage() {
 
       const data = await response.json();
 
+      // Debug logging
+      console.log("Login Response Status:", response.status);
+      console.log("Login Response:", data);
+
       if (!response.ok) {
-        throw new Error(data.message || "Failed to login");
+        console.error("Login failed:", {
+          status: response.status,
+          statusText: response.statusText,
+          data: data,
+        });
+        throw new Error(data.error || data.message || "Failed to login");
       }
 
       // Show success message

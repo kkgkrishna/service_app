@@ -2,20 +2,12 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { sign } from "jsonwebtoken";
+import prisma from "@/lib/prisma"; // Make sure this path is correct
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-
-// Generate a proper hash for "password123" using bcrypt.hashSync
-const hashedPassword =
-  "$2a$10$3QxDjD1ylZcpCGUy3qGqUe6SmqhPk5QdU85amxqP/7JqGa/K1Cdba";
-
-// Temporary user for testing
-const DEMO_USER = {
-  id: "1",
-  email: "admin@example.com",
-  name: "Admin User",
-  password: hashedPassword,
-};
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not set in environment variables");
+}
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -25,9 +17,8 @@ const loginSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
-    // Validate input
     const validation = loginSchema.safeParse(body);
+
     if (!validation.success) {
       return NextResponse.json(
         {
@@ -43,16 +34,19 @@ export async function POST(request: Request) {
 
     const { email, password } = validation.data;
 
-    // For demo purposes, only check against the demo user
-    if (email !== DEMO_USER.email) {
+    // ⛏ Fetch user from MongoDB using Prisma
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user || !user.password) {
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    // Verify password
-    const isValid = await bcrypt.compare(password, DEMO_USER.password);
+    const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return NextResponse.json(
         { error: "Invalid credentials" },
@@ -60,24 +54,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate JWT token
+    // 🔐 Generate JWT
     const token = sign(
       {
-        userId: DEMO_USER.id,
-        email: DEMO_USER.email,
-        name: DEMO_USER.name,
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
       },
-      JWT_SECRET,
+      JWT_SECRET as string,
       { expiresIn: "1d" }
     );
 
-    // Set cookie
+    // 🍪 Set secure cookie
     const response = NextResponse.json({
       message: "Login successful",
       user: {
-        id: DEMO_USER.id,
-        email: DEMO_USER.email,
-        name: DEMO_USER.name,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
       },
     });
 
@@ -85,12 +81,12 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 86400, // 1 day
+      maxAge: 60 * 60 * 24, // 1 day
     });
 
     return response;
-  } catch (error) {
-    console.error("Login error:", error);
+  } catch (err) {
+    console.error("Login error:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

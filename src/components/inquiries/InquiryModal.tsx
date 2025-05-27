@@ -16,7 +16,7 @@ const inquirySchema = z.object({
   amount: z.number().min(0, "Amount must be positive"),
   callbackTime: z.string().min(1, "Callback time is required"),
   appointmentTime: z.string().min(1, "Appointment time is required"),
-  status: z.enum(["pending", "completed", "cancelled"]),
+  status: z.enum(["pending", "active", "resolved", "closed"]),
 });
 
 type InquiryFormData = z.infer<typeof inquirySchema>;
@@ -84,7 +84,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
       setValue("appointmentTime", formatDate(inquiry.appointmentTime));
       setValue(
         "status",
-        inquiry.status as "pending" | "completed" | "cancelled"
+        inquiry.status as "pending" | "active" | "resolved" | "closed"
       );
     }
   }, [inquiry, setValue]);
@@ -113,17 +113,17 @@ const InquiryModal: FC<InquiryModalProps> = ({
           onClick={onClose}
         ></div>
 
-        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full">
           <form onSubmit={handleSubmit(handleFormSubmit)}>
-            <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4 max-h-[90vh] overflow-y-auto">
               <div className="sm:flex sm:items-start">
                 <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                   <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
                     {mode === "add" ? "Add New Inquiry" : "Edit Inquiry"}
                   </h3>
-                  <div className="mt-6 space-y-4">
+                  <div className="mt-6 grid grid-cols-2 gap-6">
                     {/* Customer Details Section */}
-                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
                       <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                         Customer Details
                       </h4>
@@ -183,7 +183,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
                     </div>
 
                     {/* Service Details Section */}
-                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
                       <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                         Service Details
                       </h4>
@@ -232,7 +232,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
                     </div>
 
                     {/* Schedule Section */}
-                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
                       <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                         Schedule
                       </h4>
@@ -275,7 +275,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
                     </div>
 
                     {/* Status Section */}
-                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
                       <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                         Status
                       </h4>
@@ -286,8 +286,9 @@ const InquiryModal: FC<InquiryModalProps> = ({
                         {...register("status")}
                       >
                         <option value="pending">Pending</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="active">Active</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
                       </select>
                       {errors.status && (
                         <p className="mt-1 text-sm text-red-600">
