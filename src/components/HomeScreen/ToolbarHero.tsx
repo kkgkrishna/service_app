@@ -43,7 +43,7 @@ const ToolbarHero: React.FC = () => {
           className="bg-white/30 backdrop-blur-md text-white w-[95%] lg:w-[90%] mx-auto rounded-full px-4 sm:px-6 py-4 shadow-md border border-white/20"
         >
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold text-white ">Arya Services</h1>
+            <h1 className="text-xl font-bold text-[#111c4d] ">Arya Services</h1>
             <button
               onClick={() => setMenuOpen(true)}
               className="md:hidden text-2xl focus:outline-none"
@@ -133,7 +133,7 @@ const ToolbarHero: React.FC = () => {
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-2xl md:text-4xl font-bold mb-4 leading-snug"
+              className="text-2xl md:text-4xl font-bold mb-4 leading-snug text-[#313639]"
             >
               A GREAT APP MAKES YOUR LIFE BETTER
             </motion.h2>
@@ -151,7 +151,7 @@ const ToolbarHero: React.FC = () => {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.4 }}
-              className="font-semibold mb-4 text-2xl"
+              className="font-semibold mb-4 text-2xl text-[#313639]"
             >
               Download App Now
             </motion.p>
