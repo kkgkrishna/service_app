@@ -21,7 +21,7 @@ const services = [
 
 const ServicesSection: React.FC = () => {
   return (
-    <section className="bg-[#2A2AA5] text-white py-16 px-4">
+    <section className="bg-[#2A2AA5] text-white py-16 px-4 z-10 ">
       {/* Header */}
       <div className="text-center mb-10">
         <h2 className="text-3xl md:text-4xl font-bold mb-2 text-white">
@@ -42,6 +42,7 @@ const ServicesSection: React.FC = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
+        className=" !z-10"
       >
         <Swiper
           modules={[Autoplay]}
@@ -58,16 +59,17 @@ const ServicesSection: React.FC = () => {
             pauseOnMouseEnter: true,
           }}
           loop={true}
+          className="!z-10"
         >
           {services.map((service, index) => (
-            <SwiperSlide key={index}>
-              <div className="flex-shrink-0 w-full max-w-[200px] text-center rounded-xl bg-white text-black shadow-lg overflow-hidden mx-auto">
+            <SwiperSlide key={index} className="">
+              <div className="flex-shrink-0 w-full max-w-[200px] text-center rounded-xl bg-white text-black shadow-lg overflow-hidden mx-auto z-10 ">
                 <Image
                   src={service.image}
                   alt={service.title}
                   width={200}
                   height={160}
-                  className="w-full h-[140px] object-cover"
+                  className="w-full h-[140px] object-cover !z-10"
                 />
                 <div className="py-3 font-semibold">{service.title}</div>
               </div>

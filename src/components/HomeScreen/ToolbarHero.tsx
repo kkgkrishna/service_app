@@ -17,33 +17,33 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const menuItems = [
   { name: "Home", icon: <FaHome />, href: "#", active: true },
-  { name: "About", icon: <FaInfoCircle />, href: "#" },
-  { name: "Services", icon: <FaServicestack />, href: "#" },
-  { name: "App", icon: <FaMobileAlt />, href: "#" },
-  { name: "Client Say", icon: <FaQuoteRight />, href: "#" },
-  { name: "Contact", icon: <FaEnvelope />, href: "#" },
+  { name: "About", icon: <FaInfoCircle />, href: "#about" },
+  { name: "Services", icon: <FaServicestack />, href: "#services" },
+  { name: "App", icon: <FaMobileAlt />, href: "#app" },
+  { name: "Client Say", icon: <FaQuoteRight />, href: "#clients" },
+  { name: "Contact", icon: <FaEnvelope />, href: "#contact" },
 ];
 
 const ToolbarHero: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <section id="bg_image">
-      {/* Sticky Header */}
-      <motion.header
+    <section id="bg_image" className="relative pt-28">
+      {/* Navbar Only */}
+      <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="text-white flex flex-col gap-2 py-5 sticky top-0 z-50"
+        className="fixed top-0 bg-transparent w-full !z-50 "
       >
         <motion.nav
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="bg-white/30 backdrop-blur-md text-white w-[95%] lg:w-[90%] mx-auto rounded-full px-4 sm:px-6 py-4 shadow-md border border-white/20"
+          className="bg-white/30 backdrop-blur-md text-white w-[95%] lg:w-[90%] mx-auto mt-4 rounded-full px-4 sm:px-6 py-4 shadow-md border border-white/20"
         >
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold text-[#111c4d] ">Arya Services</h1>
+            <h1 className="text-xl font-bold text-[#111c4d]">Arya Services</h1>
             <button
               onClick={() => setMenuOpen(true)}
               className="md:hidden text-2xl focus:outline-none"
@@ -59,7 +59,7 @@ const ToolbarHero: React.FC = () => {
                     className={`flex items-center gap-1 px-2 py-1 rounded-md ${
                       active
                         ? "text-[#112688] border-b-2 border-[#112688]"
-                        : "hover:text-[#1b2657]"
+                        : "hover:text-[#1b2657] text-[#313639]"
                     }`}
                   >
                     {icon}
@@ -70,9 +70,9 @@ const ToolbarHero: React.FC = () => {
             </ul>
           </div>
         </motion.nav>
-      </motion.header>
+      </motion.div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Slide-In Menu */}
       <AnimatePresence>
         {menuOpen && (
           <>

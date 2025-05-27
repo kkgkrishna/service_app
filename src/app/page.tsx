@@ -8,11 +8,13 @@ import ServicesSection from "@/components/HomeScreen/ServicesSection";
 import DownloadAppSection from "@/components/HomeScreen/DownloadAppSection";
 import AppUsageGuide from "@/components/HomeScreen/AppUsageGuide";
 import Footer from "@/components/HomeScreen/Footer";
+import Navbar from "@/components/HomeScreen/Navbar";
 
 export default function Home() {
   // redirect("/login");
   return (
     <>
+      {/* <Navbar /> */}
       <ToolbarHero />
       <AboutSection />
       <ServicesSection />
