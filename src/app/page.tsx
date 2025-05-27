@@ -9,6 +9,7 @@ import DownloadAppSection from "@/components/HomeScreen/DownloadAppSection";
 import AppUsageGuide from "@/components/HomeScreen/AppUsageGuide";
 import Footer from "@/components/HomeScreen/Footer";
 import Navbar from "@/components/HomeScreen/Navbar";
+import ContactSection from "@/components/HomeScreen/ContactSection";
 
 export default function Home() {
   // redirect("/login");
@@ -20,6 +21,7 @@ export default function Home() {
       <ServicesSection />
       <DownloadAppSection />
       <AppUsageGuide />
+      <ContactSection />
       <Footer />
     </>
   );
