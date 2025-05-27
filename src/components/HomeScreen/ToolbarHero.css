@@ -1,0 +1,18 @@
+#bg_image {
+  position: relative;
+  background-image: url('/assets/HeroSection/herobg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: #2a2aa6; /* fallback base */
+  isolation: isolate;
+}
+
+#bg_image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(42, 42, 166, 0.5); /* #2a2aa6 with 30% opacity */
+  z-index: 0;
+}
