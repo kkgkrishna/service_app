@@ -9,7 +9,7 @@ const AppUsageGuide: React.FC = () => {
   return (
     <>
       {/* Section: How to Use App */}
-      <section className="bg-[#2A2AA5] text-white px-4 py-16 text-center relative z-10 overflow-hidden">
+      <section className="bg-[#2A2AA5] text-white px-4 py-16 text-center relative -z-10 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -46,7 +46,7 @@ const AppUsageGuide: React.FC = () => {
       </section>
 
       {/* Section: Contact + Form */}
-      <section className="bg-white px-6 py-20 text-black relative z-10">
+      <section className="bg-white px-6 py-20 text-black relative -z-10">
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row rounded-3xl shadow-xl overflow-hidden bg-white">
           {/* Contact Info */}
           <div className="w-full lg:w-1/2 p-8 md:p-12 space-y-6">
