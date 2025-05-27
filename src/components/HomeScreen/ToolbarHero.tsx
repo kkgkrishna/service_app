@@ -34,7 +34,8 @@ const ToolbarHero: React.FC = () => {
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed top-0 bg-transparent w-full !z-50 "
+        className="fixed top-0 bg-transparent w-full "
+        style={{ zIndex: 50 }}
       >
         <motion.nav
           initial={{ opacity: 0, scale: 0.95 }}
