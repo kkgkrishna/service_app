@@ -167,7 +167,7 @@ export default function InquiriesPage() {
           </div>
           <button
             onClick={openAddModal}
-            className="inline-flex items-center px-4 py-2 bg-[var(--gradient-primary)] hover:opacity-90 text-white rounded-lg transition-all shadow-lg hover:shadow-xl"
+            className="inline-flex items-center px-4 py-2 bg-[var(--gradient-primary)] hover:opacity-90 text-gray-700 dark:text-gray-300 rounded-lg transition-all shadow-lg hover:shadow-xl"
           >
             <span className="mr-2">➕</span>
             Add New Inquiry

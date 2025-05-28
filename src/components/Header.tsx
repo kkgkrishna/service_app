@@ -1,13 +1,33 @@
-import { MdMenu } from "react-icons/md";
-import { useTheme } from "@/context/ThemeContext";
+"use client";
 
+import { useState } from "react";
+import { MdMenu } from "react-icons/md";
+import Cookies from "js-cookie";
+import Image from "next/image";
+import { HiUserCircle } from "react-icons/hi";
 interface HeaderProps {
   onMenuClick?: () => void;
 }
 
 export default function Header({ onMenuClick }: HeaderProps) {
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    Cookies.remove("token"); // Replace with your cookie name(s)
+    window.location.href = "/login"; // Redirect to login
+  };
+
+  const user = {
+    name: "Admin User",
+    email: "admin@arya.com",
+    image: "/avatar.png", // Make sure this exists or use a placeholder
+  };
+
+  alert(showDropdown);
+
   return (
-    <div className="h-16 bg-[var(--gradient-header)] backdrop-blur-md bg-opacity-90 flex items-center justify-between px-6 text-white shadow-lg z-50">
+    <div className="h-16 bg-[var(--gradient-header)] backdrop-blur-md bg-opacity-90 flex items-center justify-between px-6 text-white shadow-lg z-50 relative">
       <div className="flex items-center gap-2">
         {onMenuClick && (
           <button
@@ -21,23 +41,42 @@ export default function Header({ onMenuClick }: HeaderProps) {
           Arya Services
         </span>
       </div>
-      <div className="flex items-center gap-4">
+
+      <div className="flex items-center gap-4 relative">
         <span className="text-white/90">Welcome, Admin</span>
-        <div className="w-10 h-10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:border-white/20 transition-colors shadow-inner">
-          <svg
-            className="w-6 h-6 text-white/90"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
+
+        {/* Profile Icon */}
+        <div
+          onClick={() => setShowDropdown((prev) => !prev)}
+          className="w-10 h-10 cursor-pointer bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:border-white/20 transition-colors shadow-inner bg-red-300"
+        >
+          <HiUserCircle className="w-6 h-6 text-white/90" />
         </div>
+
+        {/* Dropdown */}
+        {showDropdown && (
+          <div className="absolute top-14 right-0 bg-white text-black rounded-xl shadow-lg w-64 z-50 p-4">
+            <div className="flex items-center gap-4 border-b pb-4">
+              <Image
+                src={user.image}
+                alt="User"
+                width={48}
+                height={48}
+                className="rounded-full border"
+              />
+              <div>
+                <p className="font-semibold text-base">{user.name}</p>
+                <p className="text-sm text-gray-600">{user.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full mt-4 text-sm bg-[#1f2aa5] hover:bg-[#1a238e] text-white py-2 px-4 rounded-full font-semibold transition"
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
