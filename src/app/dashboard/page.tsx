@@ -323,7 +323,9 @@ function StatCard({
         <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
           {title}
         </h3>
-        <p className="text-3xl font-extrabold text-gray-900 dark:text-white mt-2">{value}</p>
+        <p className="text-3xl font-extrabold text-gray-900 dark:text-white mt-2">
+          {value}
+        </p>
       </div>
     </div>
   );
@@ -343,13 +345,17 @@ function StatsCard({
   textColor: string;
 }) {
   return (
-    <div className={`rounded-xl p-4 border border-gray-200 dark:border-gray-700 ${color} hover:shadow-md transition`}>
+    <div
+      className={`rounded-xl p-4 border border-gray-200 dark:border-gray-700 ${color} hover:shadow-md transition`}
+    >
       <div className="flex items-center gap-4">
-        <div className={`text-2xl ${textColor} bg-white dark:bg-gray-800 rounded-full p-3 shadow-inner`}>
+        <div
+          className={`text-2xl ${textColor} bg-white dark:bg-gray-800 rounded-full p-3 shadow-inner`}
+        >
           {icon}
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide font-medium text-gray-600 dark:text-gray-300">
+          <p className="text-xs uppercase tracking-wide font-medium text-gray-600 dark:text-gray-600">
             {title}
           </p>
           <p className={`text-xl font-bold ${textColor}`}>{value}</p>

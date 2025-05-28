@@ -28,9 +28,9 @@ const ToolbarHero: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <section id="bg_image" className="relative pt-28">
+    <section id="bg_image" className="relative pt-28 -translate-y-20">
       {/* Navbar Only */}
-      <motion.div
+      {/* <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -71,7 +71,7 @@ const ToolbarHero: React.FC = () => {
             </ul>
           </div>
         </motion.nav>
-      </motion.div>
+      </motion.div> */}
 
       {/* Mobile Slide-In Menu */}
       <AnimatePresence>
@@ -134,7 +134,7 @@ const ToolbarHero: React.FC = () => {
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-2xl md:text-4xl font-bold mb-4 leading-snug text-[#313639]"
+              className="text-2xl md:text-4xl font-bold mb-4 leading-snug text-[#112588]"
             >
               A GREAT APP MAKES YOUR LIFE BETTER
             </motion.h2>
@@ -152,7 +152,7 @@ const ToolbarHero: React.FC = () => {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.4 }}
-              className="font-semibold mb-4 text-2xl text-[#313639]"
+              className="font-semibold mb-4 text-2xl text-[#112588]"
             >
               Download App Now
             </motion.p>

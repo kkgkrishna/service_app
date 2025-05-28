@@ -34,7 +34,7 @@ const AboutSection: React.FC = () => {
         <p className="text-sm uppercase font-semibold text-gray-600 tracking-widest">
           Why Arya ?
         </p>
-        <h2 className="text-3xl md:text-4xl font-bold text-[#1e1e50] mt-2">
+        <h2 className="text-3xl md:text-4xl font-bold text-[#2f4097] mt-2">
           About Us
         </h2>
         <p className="text-gray-500 mt-4 max-w-2xl mx-auto">

@@ -15,7 +15,7 @@ export default function Home() {
   // redirect("/login");
   return (
     <>
-      {/* <Navbar /> */}
+      <Navbar />
       <ToolbarHero />
       <AboutSection />
       <ServicesSection />

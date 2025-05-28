@@ -43,7 +43,7 @@ const ContactSection: React.FC = () => {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="w-full lg:w-1/2 p-8 md:p-12 space-y-6"
         >
-          <h3 className="text-2xl font-bold mb-4">CONTACT US</h3>
+          <h3 className="text-2xl font-bold mb-4 text-[#2f4097]">CONTACT US</h3>
           <div className="flex items-center gap-4">
             <div className="bg-[#1f2aa5] p-3 rounded-full text-white text-xl">
               <FaEnvelope />
@@ -78,7 +78,9 @@ const ContactSection: React.FC = () => {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="w-full lg:w-1/2 p-8 md:p-12 border-t lg:border-t-0 lg:border-l border-gray-200 shadow-lg"
         >
-          <h3 className="text-2xl font-bold mb-6">GET IN TOUCH</h3>
+          <h3 className="text-2xl font-bold mb-6 text-[#2f4097]">
+            GET IN TOUCH
+          </h3>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col md:flex-row gap-4">
