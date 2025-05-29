@@ -15,7 +15,8 @@ interface Inquiry {
   callbackTime: string;
   appointmentTime: string;
   amount: number;
-  status: "pending" | "active" | "resolved" | "closed";
+  status: "PENDING" | "ACTIVE" | "RESOLVED" | "CLOSED";
+  priority?: "low" | "medium" | "high" | "urgent";
 }
 
 interface Filters {
@@ -25,6 +26,7 @@ interface Filters {
   search: string;
   page: number;
   limit: number;
+  priority: string;
 }
 
 export default function InquiriesPage() {
@@ -37,6 +39,7 @@ export default function InquiriesPage() {
     search: "",
     page: 1,
     limit: 10,
+    priority: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
@@ -49,12 +52,16 @@ export default function InquiriesPage() {
     try {
       setIsLoading(true);
       const query = new URLSearchParams();
-      if (filters.status) query.append("status", filters.status);
+      if (filters.status) query.append("status", filters.status.toUpperCase());
+      if (filters.priority)
+        query.append("priority", filters.priority.toUpperCase());
       if (filters.search) query.append("search", filters.search);
       if (filters.from) query.append("from", filters.from);
       if (filters.to) query.append("to", filters.to);
       query.append("page", filters.page.toString());
       query.append("limit", filters.limit.toString());
+
+      console.log("query", query.toString());
 
       const response = await fetch(`/api/inquiries?${query.toString()}`);
       const data = await response.json();
@@ -176,7 +183,7 @@ export default function InquiriesPage() {
 
         {/* Filters Section */}
         <div className="glass-card rounded-xl p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 From Date
@@ -217,6 +224,24 @@ export default function InquiriesPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Priority
+              </label>
+              <select
+                className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm focus:ring-primary-500 focus:border-primary-500"
+                value={filters.priority}
+                onChange={(e) => handleFilterChange("priority", e.target.value)}
+              >
+                <option value="" disabled>
+                  Choose Priority
+                </option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Search
               </label>
               <div className="relative">
@@ -241,6 +266,9 @@ export default function InquiriesPage() {
             <table className="w-full">
               <thead>
                 <tr className="bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Sr. No.
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Inquiry ID
                   </th>
@@ -297,11 +325,14 @@ export default function InquiriesPage() {
                     </td>
                   </tr>
                 ) : (
-                  inquiries.map((inquiry) => (
+                  inquiries.map((inquiry, index) => (
                     <tr
                       key={inquiry.id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">
+                        {index + 1}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">
                         {inquiry.id}
                       </td>
@@ -322,27 +353,46 @@ export default function InquiriesPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 dark:text-white">
-                          Callback: {inquiry.callbackTime}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          Appointment: {inquiry.appointmentTime}
+                        <div className="flex flex-col md:flex-row gap-2">
+                          <div className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-900 dark:text-yellow-300 px-4 py-2 rounded-lg shadow-sm">
+                            <div className="text-xs font-semibold uppercase">
+                              Callback
+                            </div>
+                            <div className="text-sm font-medium">
+                              {format(
+                                new Date(inquiry.callbackTime),
+                                "dd MMM yyyy, h:mm a"
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex-1 bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-300 px-4 py-2 rounded-lg shadow-sm">
+                            <div className="text-xs font-semibold uppercase">
+                              Appointment
+                            </div>
+                            <div className="text-sm font-medium">
+                              {format(
+                                new Date(inquiry.appointmentTime),
+                                "dd MMM yyyy, h:mm a"
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
-                          ${
-                            inquiry.status === "pending"
-                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500"
-                              : inquiry.status === "active"
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500"
-                              : inquiry.status === "resolved"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-500"
-                              : inquiry.status === "closed"
-                              ? "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400"
-                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-500"
-                          }`}
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-sm
+      ${
+        inquiry.status === "PENDING"
+          ? "bg-yellow-100 text-yellow-800"
+          : inquiry.status === "ACTIVE"
+          ? "bg-green-100 text-green-800"
+          : inquiry.status === "RESOLVED"
+          ? "bg-blue-100 text-blue-800"
+          : inquiry.status === "CLOSED"
+          ? "bg-gray-200 text-gray-900"
+          : "bg-red-100 text-red-800"
+      }`}
                         >
                           {inquiry.status}
                         </span>
