@@ -16,7 +16,9 @@ const inquirySchema = z.object({
   amount: z.number().min(0, "Amount must be positive"),
   callbackTime: z.string().min(1, "Callback time is required"),
   appointmentTime: z.string().min(1, "Appointment time is required"),
-  status: z.enum(["pending", "active", "resolved", "closed"]),
+  status: z.enum(["PENDING", "ACTIVE", "RESOLVED", "CLOSED"]),
+  userId: z.string(), // add this
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]), // add this
 });
 
 type InquiryFormData = z.infer<typeof inquirySchema>;
@@ -36,6 +38,8 @@ interface InquiryModalProps {
     appointmentTime: string;
     amount: number;
     status: string;
+    userId: string;
+    priority: "LOW" | "MEDIUM" | "HIGH"; // ✅ Add this line
   };
 }
 
@@ -63,13 +67,16 @@ const InquiryModal: FC<InquiryModalProps> = ({
       amount: 0,
       callbackTime: "",
       appointmentTime: "",
-      status: "pending",
+      status: "PENDING",
+      userId: "663b4d4ef2a0112a0f3d9e92", // static default
+      priority: "HIGH", // static default
     },
   });
 
   useEffect(() => {
     if (inquiry) {
       // Format dates for datetime-local input
+      console.log("inquiry", inquiry);
       const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
         return format(date, "yyyy-MM-dd'T'HH:mm");
@@ -84,8 +91,10 @@ const InquiryModal: FC<InquiryModalProps> = ({
       setValue("appointmentTime", formatDate(inquiry.appointmentTime));
       setValue(
         "status",
-        inquiry.status as "pending" | "active" | "resolved" | "closed"
+        inquiry.status as "PENDING" | "ACTIVE" | "RESOLVED" | "CLOSED"
       );
+      setValue("userId", inquiry.userId || "663b4d4ef2a0112a0f3d9e92");
+      setValue("priority", inquiry.priority as "LOW" | "MEDIUM" | "HIGH");
     }
   }, [inquiry, setValue]);
 
@@ -229,6 +238,29 @@ const InquiryModal: FC<InquiryModalProps> = ({
                           )}
                         </div>
                       </div>
+                      {/* User ID (hidden or read-only if fixed) */}
+                      <input type="hidden" {...register("userId")} />
+                      {/* Priority */}
+                      <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                          Priority
+                        </h4>
+                        <select
+                          className={`w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500 ${
+                            errors.priority ? "border-red-500" : ""
+                          }`}
+                          {...register("priority")}
+                        >
+                          <option value="LOW">Low</option>
+                          <option value="MEDIUM">Medium</option>
+                          <option value="HIGH">High</option>
+                        </select>
+                        {errors.priority && (
+                          <p className="mt-1 text-sm text-red-600">
+                            {errors.priority.message}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     {/* Schedule Section */}
@@ -285,10 +317,10 @@ const InquiryModal: FC<InquiryModalProps> = ({
                         }`}
                         {...register("status")}
                       >
-                        <option value="pending">Pending</option>
-                        <option value="active">Active</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="RESOLVED">Resolved</option>
+                        <option value="CLOSED">Closed</option>
                       </select>
                       {errors.status && (
                         <p className="mt-1 text-sm text-red-600">

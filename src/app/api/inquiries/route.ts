@@ -85,11 +85,28 @@ export async function POST(request: Request) {
     const data = await request.json();
     console.log("🟡 Incoming inquiry payload:", data);
 
-    // Force cast `userId` as ObjectId if needed
+    // Safely convert strings to Date objects
+    const callbackTime = new Date(data.callbackTime);
+    const appointmentTime = new Date(data.appointmentTime);
+
+    if (isNaN(callbackTime.getTime()) || isNaN(appointmentTime.getTime())) {
+      return NextResponse.json(
+        { error: "Invalid date format for callbackTime or appointmentTime" },
+        { status: 400 }
+      );
+    }
+
     const inquiry = await prisma.inquiry.create({
       data: {
-        ...data,
-        userId: data.userId, // Ensure it's passed as a string, Prisma will cast
+        customerName: data.customerName,
+        mobileNo: data.mobileNo,
+        city: data.city,
+        service: data.service,
+        callbackTime,
+        appointmentTime,
+        amount: data.amount,
+        status: data.status,
+        userId: data.userId || null,
       },
     });
 

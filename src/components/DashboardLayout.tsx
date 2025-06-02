@@ -7,6 +7,7 @@ import { HiUserCircle } from "react-icons/hi";
 import { useTheme } from "@/context/ThemeContext";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default function DashboardLayout({
   children,

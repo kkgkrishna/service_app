@@ -16,7 +16,8 @@ interface Inquiry {
   appointmentTime: string;
   amount: number;
   status: "PENDING" | "ACTIVE" | "RESOLVED" | "CLOSED";
-  priority?: "low" | "medium" | "high" | "urgent";
+  priority?: "LOW" | "MEDIUM" | "HIGH";
+  userId: string;
 }
 
 interface Filters {
@@ -44,8 +45,22 @@ export default function InquiriesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | undefined>();
+
   const [isLoading, setIsLoading] = useState(true);
   const [totalItems, setTotalItems] = useState(0);
+  const blankInquiry: Inquiry = {
+    id: "",
+    customerName: "",
+    mobileNo: "",
+    city: "",
+    service: "",
+    callbackTime: new Date().toISOString(),
+    appointmentTime: new Date().toISOString(),
+    amount: 0,
+    status: "PENDING",
+    priority: "HIGH",
+    userId: "",
+  };
 
   // Fetch inquiries from API
   const fetchInquiries = useCallback(async () => {
@@ -98,8 +113,9 @@ export default function InquiriesPage() {
   };
 
   const handleEditInquiry = async (data: any) => {
+    console.log("data", data);
     try {
-      const response = await fetch(`/api/inquiries?id=${data.id}`, {
+      const response = await fetch(`/api/inquiries?id=${data.userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -143,7 +159,7 @@ export default function InquiriesPage() {
   // Handlers
   const openAddModal = () => {
     setModalMode("add");
-    setSelectedInquiry(undefined);
+    setSelectedInquiry(blankInquiry);
     setIsModalOpen(true);
   };
 
@@ -468,7 +484,7 @@ export default function InquiriesPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
-        inquiry={selectedInquiry}
+        inquiry={selectedInquiry as any}
         onSubmit={modalMode === "add" ? handleAddInquiry : handleEditInquiry}
       />
     </DashboardLayout>
