@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { Constants } from "@/constant/constant";
 
 const services = [
   { title: "Refrigerator", image: "/assets/ServiceSection/refrigerator.jpg" },
@@ -43,14 +44,14 @@ const AboutSection: React.FC = () => {
             Our Mission
           </h4>
           <h2 className="text-4xl font-bold text-[#2f4097]">
-            Why Choose Arya Services?
+            Why Choose {Constants.DEFAULT_BRAND_NAME} Services?
           </h2>
           <p className="text-lg leading-relaxed text-gray-600">
-            Arya Services is committed to delivering hassle-free, expert-level
-            appliance repair and maintenance right at your doorstep. With
-            transparent pricing, fully equipped professionals, and a strong
-            customer-first philosophy, we simplify home services for your peace
-            of mind.
+            {Constants.DEFAULT_BRAND_NAME} Services is committed to delivering
+            hassle-free, expert-level appliance repair and maintenance right at
+            your doorstep. With transparent pricing, fully equipped
+            professionals, and a strong customer-first philosophy, we simplify
+            home services for your peace of mind.
           </p>
           <ul className="space-y-4">
             {[
@@ -130,7 +131,7 @@ const AboutSection: React.FC = () => {
           Whether it’s your cooling appliance in peak summer or your geyser in
           winter, we’re always ready to help. Our service ethos is rooted in
           trust, speed, and satisfaction. That’s why hundreds of customers rely
-          on Arya Services.
+          on {Constants.DEFAULT_BRAND_NAME} Services.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
           {[

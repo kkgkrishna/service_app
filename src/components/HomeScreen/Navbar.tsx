@@ -12,6 +12,7 @@ import {
   FaSignInAlt,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { Constants } from "@/constant/constant";
 
 const menuItems = [
   { name: "Home", icon: <FaHome />, href: "/" },
@@ -61,7 +62,7 @@ const Navbar: React.FC = () => {
             className="text-xl font-bold text-[#112588] cursor-pointer"
             onClick={() => router.push("/")}
           >
-            Arya Services
+            {Constants.DEFAULT_BRAND_NAME} Services
           </h1>
 
           <div className="hidden md:flex gap-4 items-center">

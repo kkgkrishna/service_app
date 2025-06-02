@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { FaCheckCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { Constants } from "@/constant/constant";
 
 const features = [
   {
@@ -32,15 +33,15 @@ const AboutSection: React.FC = () => {
         className="mb-12"
       >
         <p className="text-sm uppercase font-semibold text-gray-600 tracking-widest">
-          Why Arya ?
+          Why {Constants.DEFAULT_BRAND_NAME} ?
         </p>
         <h2 className="text-3xl md:text-4xl font-bold text-[#2f4097] mt-2">
           About Us
         </h2>
         <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-          Arya Services is a platform that offers its customers to book Services
-          & Repair complaints for all the Electrical appliances at home with
-          convenience & much more.
+          {Constants.DEFAULT_BRAND_NAME} Services is a platform that offers its
+          customers to book Services & Repair complaints for all the Electrical
+          appliances at home with convenience & much more.
         </p>
       </motion.div>
 

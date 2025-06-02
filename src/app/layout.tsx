@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Toaster } from "react-hot-toast";
 import { Josefin_Sans } from "next/font/google";
+import { Constants } from "@/constant/constant";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,8 +15,8 @@ const josefin = Josefin_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Arya Service Dashboard",
-  description: "Admin dashboard for Arya Service",
+  title: `${Constants.DEFAULT_BRAND_NAME} Service Dashboard`,
+  description: `Admin dashboard for ${Constants.DEFAULT_BRAND_NAME} Service`,
 };
 
 export default function RootLayout({

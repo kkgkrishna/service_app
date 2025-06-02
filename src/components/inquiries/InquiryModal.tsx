@@ -76,7 +76,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
   useEffect(() => {
     if (inquiry) {
       // Format dates for datetime-local input
-      console.log("inquiry", inquiry);
+      // console.log("inquiry", inquiry);
       const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
         return format(date, "yyyy-MM-dd'T'HH:mm");

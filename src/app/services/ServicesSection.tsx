@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Constants } from "@/constant/constant";
 
 const services = [
   { title: "Refrigerator", image: "/assets/ServiceSection/refrigerator.jpg" },
@@ -27,12 +28,13 @@ const ServicesSection = () => {
             transition={{ duration: 0.7 }}
             className="text-4xl md:text-5xl font-extrabold text-[#2f4097]"
           >
-            Arya Services
+            {Constants.DEFAULT_BRAND_NAME} Services
           </motion.h1>
           <p className="text-lg md:text-xl max-w-4xl mx-auto text-gray-600">
-            Arya Services is your trusted partner for fast, reliable, and expert
-            home appliance service. From installations to emergency repairs, our
-            technicians deliver top-tier service with utmost professionalism.
+            {Constants.DEFAULT_BRAND_NAME} Services is your trusted partner for
+            fast, reliable, and expert home appliance service. From
+            installations to emergency repairs, our technicians deliver top-tier
+            service with utmost professionalism.
           </p>
         </section>
 
@@ -72,7 +74,7 @@ const ServicesSection = () => {
 
         <section className="bg-indigo-50 p-10 rounded-xl shadow-md space-y-6">
           <h2 className="text-3xl font-bold text-[#2f4097]">
-            Why Choose Arya Services?
+            Why Choose {Constants.DEFAULT_BRAND_NAME} Services?
           </h2>
           <ul className="space-y-3 text-gray-700 list-disc pl-6">
             <li>Certified and experienced professionals.</li>
@@ -86,11 +88,11 @@ const ServicesSection = () => {
         <section className="space-y-8">
           <h2 className="text-3xl font-bold text-[#2f4097]">Our Mission</h2>
           <p className="text-gray-600 text-lg leading-relaxed">
-            At Arya Services, our mission is to revolutionize home service
-            experiences by combining convenience, transparency, and expertise.
-            We strive to deliver hassle-free maintenance and repair solutions
-            that empower customers to enjoy the comfort of their homes without
-            disruption.
+            At {Constants.DEFAULT_BRAND_NAME} Services, our mission is to
+            revolutionize home service experiences by combining convenience,
+            transparency, and expertise. We strive to deliver hassle-free
+            maintenance and repair solutions that empower customers to enjoy the
+            comfort of their homes without disruption.
           </p>
           <p className="text-gray-600 text-lg leading-relaxed">
             We believe in creating lasting relationships built on trust,

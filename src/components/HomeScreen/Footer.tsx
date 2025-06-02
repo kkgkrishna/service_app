@@ -1,5 +1,6 @@
 "use client";
 
+import { Constants } from "@/constant/constant";
 import React from "react";
 import {
   FaFacebookF,
@@ -17,7 +18,9 @@ const Footer: React.FC = () => {
         <div className="flex flex-col items-start gap-4">
           <div className="flex items-center gap-2">
             <span className="text-4xl">⚙️</span>
-            <h2 className="text-2xl font-bold text-white">Arya Services</h2>
+            <h2 className="text-2xl font-bold text-white">
+              {Constants.DEFAULT_BRAND_NAME} Services
+            </h2>
           </div>
           <div className="flex gap-4 text-xl mt-2">
             <a href="#" className="hover:text-blue-300">
@@ -62,8 +65,9 @@ const Footer: React.FC = () => {
       {/* Divider */}
       <div className="border-t border-gray-700 mt-12 pt-6 text-center text-sm text-white/80">
         <p>
-          © Copyright 2022 <strong>Arya Service</strong>. All Rights Reserved. –
-          Design & Developed by{" "}
+          © Copyright 2022{" "}
+          <strong>{Constants.DEFAULT_BRAND_NAME} Service</strong>. All Rights
+          Reserved. – Design & Developed by{" "}
           <a
             href="https://phynlabz.com"
             className="text-blue-400 hover:underline"

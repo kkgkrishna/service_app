@@ -1,4 +1,4 @@
-# Arya Service Admin Dashboard
+# clapzo Service Admin Dashboard
 
 A modern admin dashboard built with Next.js, TypeScript, and Tailwind CSS. This application provides a comprehensive interface for managing service inquiries, engineers, and collections.
 

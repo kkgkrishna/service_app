@@ -16,7 +16,7 @@ const AuthCard: FC<AuthCardProps> = ({ children, title, subtitle }) => {
             <Image
               className="h-10 w-auto sm:h-12"
               src="/logo.svg"
-              alt="Arya Service"
+              alt="clapzo Service"
               width={48}
               height={48}
               priority

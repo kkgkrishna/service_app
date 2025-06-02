@@ -112,10 +112,17 @@ export default function InquiriesPage() {
     }
   };
 
+  console.log("selectedInquiry", selectedInquiry);
+
   const handleEditInquiry = async (data: any) => {
+    if (!selectedInquiry) {
+      toast.error("No inquiry selected.");
+      return;
+    }
+
     console.log("data", data);
     try {
-      const response = await fetch(`/api/inquiries?id=${data.userId}`, {
+      const response = await fetch(`/api/inquiries?id=${selectedInquiry.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

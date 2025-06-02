@@ -5,6 +5,7 @@ import { MdMenu } from "react-icons/md";
 import Cookies from "js-cookie";
 import Image from "next/image";
 import { HiUserCircle } from "react-icons/hi";
+import { Constants } from "@/constant/constant";
 interface HeaderProps {
   onMenuClick?: () => void;
 }
@@ -20,7 +21,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   const user = {
     name: "Admin User",
-    email: "admin@arya.com",
+    email: "admin@clapzo.com",
     image: "/avatar.png", // Make sure this exists or use a placeholder
   };
 
@@ -38,7 +39,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           </button>
         )}
         <span className="text-xl font-semibold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-          Arya Services
+          {Constants.DEFAULT_BRAND_NAME} Services
         </span>
       </div>
 

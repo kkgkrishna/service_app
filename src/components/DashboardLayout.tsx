@@ -8,6 +8,7 @@ import { useTheme } from "@/context/ThemeContext";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { cookies } from "next/headers";
+import { Constants } from "@/constant/constant";
 
 export default function DashboardLayout({
   children,
@@ -67,7 +68,7 @@ export default function DashboardLayout({
               <MdMenu className="w-6 h-6 text-[var(--header-text)]" />
             </button>
             <span className="text-xl font-semibold text-[var(--header-text)]">
-              Arya Services
+              {Constants.DEFAULT_BRAND_NAME} Services
             </span>
           </div>
 

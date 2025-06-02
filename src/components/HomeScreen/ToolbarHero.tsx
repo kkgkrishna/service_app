@@ -14,6 +14,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { Constants } from "@/constant/constant";
 
 const menuItems = [
   { name: "Home", icon: <FaHome />, href: "#", active: true },
@@ -44,7 +45,7 @@ const ToolbarHero: React.FC = () => {
           className="bg-white/30 backdrop-blur-md text-white w-[95%] lg:w-[90%] mx-auto mt-4 rounded-full px-4 sm:px-6 py-4 shadow-md border border-white/20"
         >
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold text-[#111c4d]">Arya Services</h1>
+            <h1 className="text-xl font-bold text-[#111c4d]">{Constants.DEFAULT_BRAND_NAME} Services</h1>
             <button
               onClick={() => setMenuOpen(true)}
               className="md:hidden text-2xl focus:outline-none"
