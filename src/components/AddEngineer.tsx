@@ -3,24 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 
-const serviceCategories = [
-  "TV UPTO 32INCH Installation",
-  "Window AC Installation",
-  "Split AC Installation",
-  "Chimney Installation",
-  "Gas Geyser Installation",
-  "Water Purifier Installation",
-  "DTH Installation",
-  "HOB TOP Installation",
-  "Chimney Deep Cleaning",
-  "Electric Geyser Services",
-  "Water Purifier Service",
-  "Gas Stove Repair",
-  "Split / Window (Deep Cleaning with Jet Pump)",
-  "Cassette AC Repair",
-  "Gas Leak Fixing & Refill (Window/Split)",
-  "Chimney Uninstallation",
-];
+interface Category {
+  id: string;
+  name: string;
+}
 
 interface AddEngineerModalProps {
   isOpen: boolean;
@@ -28,6 +14,7 @@ interface AddEngineerModalProps {
   onAdd: (engineer: any) => void;
   type: "add" | "edit";
   initialData?: any;
+  categoriesList: Category[];
 }
 
 export default function AddEngineerModal({
@@ -36,6 +23,7 @@ export default function AddEngineerModal({
   onAdd,
   type,
   initialData,
+  categoriesList,
 }: AddEngineerModalProps) {
   const [form, setForm] = useState({
     name: "",
@@ -44,19 +32,22 @@ export default function AddEngineerModal({
     phone: "",
     address: "",
     city: "",
-    categories: [] as string[],
+    categoryIds: [] as string[],
   });
 
   useEffect(() => {
+    console.log("initialData", initialData);
     if (type === "edit" && initialData) {
       setForm({
         name: initialData.name || "",
         email: initialData.email || "",
-        password: "", // keep password empty in edit
+        password: "",
         phone: initialData.phone || "",
         address: initialData.address || "",
         city: initialData.city || "",
-        categories: initialData.categories || [],
+        categoryIds: initialData.categories
+          ? initialData.categories.map((cat: Category) => cat.id)
+          : [],
       });
     } else {
       setForm({
@@ -66,7 +57,7 @@ export default function AddEngineerModal({
         phone: "",
         address: "",
         city: "",
-        categories: [],
+        categoryIds: [],
       });
     }
   }, [type, initialData, isOpen]);
@@ -76,23 +67,19 @@ export default function AddEngineerModal({
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const toggleCategory = (cat: string) => {
+  const toggleCategory = (id: string) => {
     setForm((prev) => {
-      const categories = prev.categories.includes(cat)
-        ? prev.categories.filter((c) => c !== cat)
-        : [...prev.categories, cat];
-      return { ...prev, categories };
+      const categoryIds = prev.categoryIds.includes(id)
+        ? prev.categoryIds.filter((c) => c !== id)
+        : [...prev.categoryIds, id];
+      return { ...prev, categoryIds };
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAdd(form);
-    toast.success(
-      type === "edit"
-        ? "Engineer updated successfully"
-        : "Engineer added successfully"
-    );
+    toast.success(type === "edit" ? "Engineer updated" : "Engineer added");
     onClose();
   };
 
@@ -145,46 +132,47 @@ export default function AddEngineerModal({
               </div>
             ))}
 
-            {/* Categories Dropdown with Styled Checkboxes */}
             <div className="relative">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Categories
               </label>
               <details className="w-full border rounded-md dark:bg-gray-700 dark:text-white px-4 py-2 open:shadow-lg">
                 <summary className="cursor-pointer list-none">
-                  {form.categories.length > 0
-                    ? "Selected Categories"
+                  {form.categoryIds.length > 0
+                    ? `Selected (${form.categoryIds.length})`
                     : "Select categories"}
                 </summary>
                 <div className="mt-2 max-h-48 overflow-y-auto space-y-1">
-                  {serviceCategories.map((cat) => (
+                  {categoriesList.map((cat) => (
                     <label
-                      key={cat}
+                      key={cat.id}
                       className="flex items-center gap-2 px-2 py-1 cursor-pointer"
                     >
                       <input
                         type="checkbox"
-                        checked={form.categories.includes(cat)}
-                        onChange={() => toggleCategory(cat)}
+                        checked={form.categoryIds.includes(cat.id)}
+                        onChange={() => toggleCategory(cat.id)}
                         className="w-4 h-4 rounded text-blue-600 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                       />
-                      <span className="text-sm">{cat}</span>
+                      <span className="text-sm">{cat.name}</span>
                     </label>
                   ))}
                 </div>
               </details>
 
-              {/* Chips */}
-              {form.categories.length > 0 && (
+              {form.categoryIds.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {form.categories.map((cat) => (
-                    <span
-                      key={cat}
-                      className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-blue-800 dark:text-blue-100"
-                    >
-                      {cat}
-                    </span>
-                  ))}
+                  {form.categoryIds.map((id) => {
+                    const category = categoriesList.find((c) => c.id === id);
+                    return (
+                      <span
+                        key={id}
+                        className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium dark:bg-blue-800 dark:text-blue-100"
+                      >
+                        {category?.name || id}
+                      </span>
+                    );
+                  })}
                 </div>
               )}
             </div>

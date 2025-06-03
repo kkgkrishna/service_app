@@ -53,6 +53,7 @@ model Engineer {
   phone              String
   city               String
   status             Boolean            @default(true)
+  address            String?
 
   inquiries          Inquiry[]          @relation("EngineerToInquiries")
   engineerCategories EngineerCategory[]

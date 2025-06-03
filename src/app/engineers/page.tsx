@@ -11,9 +11,13 @@ export default function EngineersPage() {
   const [modalType, setModalType] = useState<"add" | "edit">("add");
   const [engineers, setEngineers] = useState([]);
   const [selectedEngineer, setSelectedEngineer] = useState<any>(null);
+  const [categoriesList, setCategoriesList] = useState<
+    { id: string; name: string }[]
+  >([]);
 
   useEffect(() => {
     fetchEngineers();
+    fetchCategories();
   }, []);
 
   const fetchEngineers = async () => {
@@ -21,8 +25,18 @@ export default function EngineersPage() {
       const res = await fetch("/api/engineers");
       const data = await res.json();
       setEngineers(data);
-    } catch (err) {
+    } catch {
       toast.error("Failed to fetch engineers");
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      setCategoriesList(data);
+    } catch {
+      toast.error("Failed to fetch categories");
     }
   };
 
@@ -40,10 +54,11 @@ export default function EngineersPage() {
 
   const handleSaveEngineer = async (form: any) => {
     const isEdit = modalType === "edit";
+    console.log("form", form);
     const url = isEdit
       ? `/api/engineers/${selectedEngineer.id}`
       : `/api/engineers`;
-    const method = isEdit ? "PUT" : "POST";
+    const method = isEdit ? "PATCH" : "POST";
 
     try {
       const res = await fetch(url, {
@@ -58,7 +73,7 @@ export default function EngineersPage() {
       setIsModalOpen(false);
       setSelectedEngineer(null);
       fetchEngineers();
-    } catch (error) {
+    } catch {
       toast.error("Save failed");
     }
   };
@@ -97,6 +112,7 @@ export default function EngineersPage() {
         onAdd={handleSaveEngineer}
         type={modalType}
         initialData={selectedEngineer}
+        categoriesList={categoriesList} // ✅ FIXED: pass required prop
       />
     </DashboardLayout>
   );

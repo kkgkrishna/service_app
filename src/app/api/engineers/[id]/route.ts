@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET /api/engineers/:id
+// GET /api/engineers/:id - Fetch one engineer with categories
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
@@ -34,41 +34,31 @@ export async function GET(
   }
 }
 
-// PATCH /api/engineers/:id
+// PATCH /api/engineers/:id - Update engineer and category links
 export async function PATCH(
   req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
     const body = await req.json();
-    const { name, email, phone, city, status, categories } = body;
+    const { name, email, phone, city, status, categoryIds = [] } = body;
 
     const updated = await prisma.engineer.update({
       where: { id: params.id },
-      data: {
-        name,
-        email,
-        phone,
-        city,
-        status,
-      },
+      data: { name, email, phone, city, status },
     });
 
-    // Update category relationships
-    if (Array.isArray(categories)) {
-      await prisma.engineerCategory.deleteMany({
-        where: { engineerId: params.id },
-      });
+    // Reset category relations
+    await prisma.engineerCategory.deleteMany({
+      where: { engineerId: params.id },
+    });
 
-      if (categories.length > 0) {
-        const links = categories.map((categoryId: string) => ({
-          engineerId: params.id,
-          categoryId,
-        }));
-        await prisma.engineerCategory.createMany({
-          data: links,
-        });
-      }
+    if (categoryIds.length > 0) {
+      const links = categoryIds.map((categoryId: string) => ({
+        engineerId: params.id,
+        categoryId,
+      }));
+      await prisma.engineerCategory.createMany({ data: links });
     }
 
     return NextResponse.json(updated);
@@ -81,13 +71,12 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/engineers/:id
+// DELETE /api/engineers/:id - Remove engineer and category links
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Cleanup related categories first
     await prisma.engineerCategory.deleteMany({
       where: { engineerId: params.id },
     });
