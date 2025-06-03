@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 interface Category {
   id: string;
@@ -61,6 +62,46 @@ export default function ManageEngineer({
     setDetailModalOpen(true);
   };
 
+  const handleDeleteEngineer = async (engineer: Engineer) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${engineer.name}?`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/engineers/${engineer.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success("Engineer deleted successfully");
+      await onDeleteSuccess();
+    } catch (error) {
+      console.error("Failed to delete engineer:", error);
+      alert("Delete failed");
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${selectedEngineers.length} selected engineer(s)?`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await Promise.all(
+        selectedEngineers.map((id) =>
+          fetch(`/api/engineers/${id}`, { method: "DELETE" })
+        )
+      );
+      toast.success("Engineers deleted successfully");
+      await onDeleteSuccess();
+      setSelectedEngineers([]);
+    } catch (error) {
+      console.error("Bulk delete failed:", error);
+      alert("Failed to delete selected engineers");
+    }
+  };
+
   const CustomCheckbox = ({
     checked,
     onChange,
@@ -85,7 +126,6 @@ export default function ManageEngineer({
     <>
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
         <div className="p-6">
-          {/* Top Bar */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
               <span className="text-gray-600 dark:text-gray-400">Search:</span>
@@ -99,7 +139,6 @@ export default function ManageEngineer({
             </div>
           </div>
 
-          {/* Table */}
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
@@ -170,9 +209,7 @@ export default function ManageEngineer({
                         Edit
                       </button>
                       <button
-                        onClick={async () => {
-                          await onDeleteSuccess();
-                        }}
+                        onClick={() => handleDeleteEngineer(engineer)}
                         className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
                       >
                         Delete
@@ -184,13 +221,12 @@ export default function ManageEngineer({
             </table>
           </div>
 
-          {/* Bulk Delete */}
           <div className="flex justify-between items-center mt-4">
             <div className="text-sm text-gray-600 dark:text-gray-400">
               Showing {filteredEngineers.length} entries
             </div>
             <button
-              onClick={onDeleteSuccess}
+              onClick={handleBulkDelete}
               disabled={selectedEngineers.length === 0}
               className={cn(
                 "px-4 py-2 rounded text-sm font-medium",
@@ -205,16 +241,12 @@ export default function ManageEngineer({
         </div>
       </div>
 
-      {/* Detail Modal */}
       {detailModalOpen && selectedEngineer && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 relative">
-            {/* Title */}
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Engineer Details
             </h2>
-
-            {/* Info Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-800 dark:text-gray-200 text-sm">
               <div>
                 <strong>ID:</strong>{" "}
@@ -259,8 +291,6 @@ export default function ManageEngineer({
                 </span>
               </div>
             </div>
-
-            {/* Categories */}
             <div className="mt-6">
               <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">
                 Categories:
@@ -281,8 +311,6 @@ export default function ManageEngineer({
                 <p className="text-sm text-gray-500">No categories assigned.</p>
               )}
             </div>
-
-            {/* Close Button */}
             <div className="flex justify-end mt-8">
               <button
                 onClick={() => {

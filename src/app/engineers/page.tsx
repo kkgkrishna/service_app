@@ -5,6 +5,7 @@ import ManageEngineer from "@/components/ManageEngineer";
 import DashboardLayout from "@/components/DashboardLayout";
 import AddEngineerModal from "@/components/AddEngineer";
 import { toast } from "react-hot-toast";
+import CustomLoader from "../../../CustomPages/CustomLoader";
 
 export default function EngineersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,6 +15,7 @@ export default function EngineersPage() {
   const [categoriesList, setCategoriesList] = useState<
     { id: string; name: string }[]
   >([]);
+  const [loading, setLoading] = useState(false); // ✅ Add loader state
 
   useEffect(() => {
     fetchEngineers();
@@ -21,22 +23,28 @@ export default function EngineersPage() {
   }, []);
 
   const fetchEngineers = async () => {
+    setLoading(true); // ✅ Start loader
     try {
       const res = await fetch("/api/engineers");
       const data = await res.json();
       setEngineers(data);
     } catch {
       toast.error("Failed to fetch engineers");
+    } finally {
+      setLoading(false); // ✅ Stop loader
     }
   };
 
   const fetchCategories = async () => {
+    setLoading(true);
     try {
       const res = await fetch("/api/categories");
       const data = await res.json();
       setCategoriesList(data);
     } catch {
       toast.error("Failed to fetch categories");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,12 +62,12 @@ export default function EngineersPage() {
 
   const handleSaveEngineer = async (form: any) => {
     const isEdit = modalType === "edit";
-    console.log("form", form);
     const url = isEdit
       ? `/api/engineers/${selectedEngineer.id}`
       : `/api/engineers`;
     const method = isEdit ? "PATCH" : "POST";
 
+    setLoading(true);
     try {
       const res = await fetch(url, {
         method,
@@ -72,14 +80,17 @@ export default function EngineersPage() {
       toast.success(isEdit ? "Engineer updated" : "Engineer added");
       setIsModalOpen(false);
       setSelectedEngineer(null);
-      fetchEngineers();
+      await fetchEngineers();
     } catch {
       toast.error("Save failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <DashboardLayout>
+      {/* {!loading && <CustomLoader />} ✅ Show loader when loading */}
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
@@ -96,13 +107,11 @@ export default function EngineersPage() {
           + Add New Engineer
         </button>
       </div>
-
       <ManageEngineer
         engineers={engineers}
         onEdit={handleEditClick}
         onDeleteSuccess={fetchEngineers}
       />
-
       <AddEngineerModal
         isOpen={isModalOpen}
         onClose={() => {
@@ -112,7 +121,7 @@ export default function EngineersPage() {
         onAdd={handleSaveEngineer}
         type={modalType}
         initialData={selectedEngineer}
-        categoriesList={categoriesList} // ✅ FIXED: pass required prop
+        categoriesList={categoriesList}
       />
     </DashboardLayout>
   );

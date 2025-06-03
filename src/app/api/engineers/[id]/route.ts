@@ -41,11 +41,11 @@ export async function PATCH(
 ) {
   try {
     const body = await req.json();
-    const { name, email, phone, city, status, categoryIds = [] } = body;
+    const { name, email, address, phone, city, status, categoryIds = [] } = body;
 
     const updated = await prisma.engineer.update({
       where: { id: params.id },
-      data: { name, email, phone, city, status },
+      data: { name, email, address, phone, city, status },
     });
 
     // Reset category relations

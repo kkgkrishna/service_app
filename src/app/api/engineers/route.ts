@@ -48,6 +48,7 @@ export async function POST(req: Request) {
         email: body.email,
         phone: body.phone,
         city: body.city,
+        address: body.address,
         status: body.status ?? true,
         engineerCategories: {
           create:

@@ -79,7 +79,7 @@ export default function AddEngineerModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAdd(form);
-    toast.success(type === "edit" ? "Engineer updated" : "Engineer added");
+    // toast.success(type === "edit" ? "Engineer updated" : "Engineer added");
     onClose();
   };
 
