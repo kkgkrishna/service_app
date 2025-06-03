@@ -114,18 +114,31 @@ export default function InquiriesPage() {
 
   console.log("selectedInquiry", selectedInquiry);
 
+  const toUTCISOString = (localDateStr: string): string => {
+    const localDate = new Date(localDateStr);
+    return localDate.toISOString(); // Converts local datetime to UTC ISO format
+  };
+
   const handleEditInquiry = async (data: any) => {
     if (!selectedInquiry) {
       toast.error("No inquiry selected.");
       return;
     }
 
-    console.log("data", data);
+    // ✅ Convert datetime fields to proper ISO format
+    const updatedData = {
+      ...data,
+      callbackTime: toUTCISOString(data.callbackTime),
+      appointmentTime: toUTCISOString(data.appointmentTime),
+    };
+
+    console.log("updatedData", updatedData);
+
     try {
       const response = await fetch(`/api/inquiries?id=${selectedInquiry.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(updatedData),
       });
 
       if (!response.ok) throw new Error("Failed to update inquiry");

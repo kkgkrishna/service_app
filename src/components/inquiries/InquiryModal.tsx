@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";
+import { formatDateForInput } from "../../../Utils/Utils";
 
 const inquirySchema = z.object({
   customerName: z.string().min(3, "Name must be at least 3 characters"),
@@ -72,29 +73,35 @@ const InquiryModal: FC<InquiryModalProps> = ({
       priority: "HIGH", // static default
     },
   });
+  const [formattedCallbackTime, setFormattedCallbackTime] = useState("");
+  const [formattedAppointmentTime, setFormattedAppointmentTime] = useState("");
 
   useEffect(() => {
     if (inquiry) {
       // Format dates for datetime-local input
-      // console.log("inquiry", inquiry);
-      const formatDate = (dateStr: string) => {
-        const date = new Date(dateStr);
-        return format(date, "yyyy-MM-dd'T'HH:mm");
-      };
+      console.log("inquiry", inquiry.service);
+
+      const formattedCallback = formatDateForInput(inquiry.callbackTime);
+      const formattedAppointment = formatDateForInput(inquiry.appointmentTime);
 
       setValue("customerName", inquiry.customerName);
       setValue("mobileNo", inquiry.mobileNo);
       setValue("city", inquiry.city);
       setValue("service", inquiry.service);
       setValue("amount", inquiry.amount);
-      setValue("callbackTime", formatDate(inquiry.callbackTime));
-      setValue("appointmentTime", formatDate(inquiry.appointmentTime));
+
       setValue(
         "status",
         inquiry.status as "PENDING" | "ACTIVE" | "RESOLVED" | "CLOSED"
       );
       setValue("userId", inquiry.userId || "663b4d4ef2a0112a0f3d9e92");
       setValue("priority", inquiry.priority as "LOW" | "MEDIUM" | "HIGH");
+
+      setFormattedCallbackTime(formattedCallback);
+      setFormattedAppointmentTime(formattedAppointment);
+
+      setValue("callbackTime", formattedCallback);
+      setValue("appointmentTime", formattedAppointment);
     }
   }, [inquiry, setValue]);
 
@@ -213,6 +220,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
                             </option>
                             <option>Split / Window (FOAM)</option>
                             <option>General Service</option>
+                            <option>AC Repair</option>
                           </select>
                           {errors.service && (
                             <p className="mt-1 text-sm text-red-600">
@@ -226,10 +234,16 @@ const InquiryModal: FC<InquiryModalProps> = ({
                           </label>
                           <input
                             type="number"
+                            step="0.01"
                             className={`w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500 ${
                               errors.amount ? "border-red-500" : ""
                             }`}
-                            {...register("amount", { valueAsNumber: true })}
+                            {...register("amount", {
+                              required: "Please enter a valid amount",
+                              valueAsNumber: true,
+                              validate: (v) =>
+                                !isNaN(v) || "Please enter a valid number",
+                            })}
                           />
                           {errors.amount && (
                             <p className="mt-1 text-sm text-red-600">
@@ -275,6 +289,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
                           </label>
                           <input
                             type="datetime-local"
+                            defaultValue={formattedCallbackTime}
                             className={`w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500 ${
                               errors.callbackTime ? "border-red-500" : ""
                             }`}
@@ -292,6 +307,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
                           </label>
                           <input
                             type="datetime-local"
+                            defaultValue={formattedAppointmentTime}
                             className={`w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500 ${
                               errors.appointmentTime ? "border-red-500" : ""
                             }`}
