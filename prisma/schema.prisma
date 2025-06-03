@@ -1,46 +1,87 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
- 
-
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
 generator client {
   provider = "prisma-client-js"
 }
 
- 
-
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  email     String   @unique
+  email     String    @unique
   password  String
-  role      Role     @default(USER)
-  inquiries Inquiry[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role      @default(USER)
+  inquiries Inquiry[] @relation("UserToInquiries")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Inquiry {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
   customerName    String
   mobileNo        String
   city            String
   service         String
   callbackTime    DateTime
   appointmentTime DateTime?
-  amount          Float    @default(0)
+  amount          Float          @default(0)
   status          InquiryStatus  @default(PENDING)
-  priority        Priority       @default(MEDIUM)
+  priority        String
+
   userId          String         @db.ObjectId
-  user            User           @relation(fields: [userId], references: [id])
+  user            User           @relation("UserToInquiries", fields: [userId], references: [id])
+
+  engineerId      String?        @db.ObjectId
+  engineer        Engineer?      @relation("EngineerToInquiries", fields: [engineerId], references: [id])
+
+  alternateMobile String?
+  address         String?
+  landmark        String?
+  pincode         String
+  state           String
+
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+}
+
+model Engineer {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  email              String             @unique
+  phone              String
+  city               String
+  status             Boolean            @default(true)
+
+  inquiries          Inquiry[]          @relation("EngineerToInquiries")
+  engineerCategories EngineerCategory[]
+
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model Category {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  name               String             @unique
+
+  engineerCategories EngineerCategory[]
+
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model EngineerCategory {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+
+  engineerId  String     @db.ObjectId
+  categoryId  String     @db.ObjectId
+
+  engineer    Engineer   @relation(fields: [engineerId], references: [id])
+  category    Category   @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 enum InquiryStatus {

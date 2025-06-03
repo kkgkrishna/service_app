@@ -5,6 +5,7 @@ import InquiryModal from "@/components/inquiries/InquiryModal";
 import { useState, useCallback, useEffect } from "react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import InquiryInfo from "@/components/inquiries/InquiryInfo";
 
 interface Inquiry {
   id: string;
@@ -18,6 +19,7 @@ interface Inquiry {
   status: "PENDING" | "ACTIVE" | "RESOLVED" | "CLOSED";
   priority?: "LOW" | "MEDIUM" | "HIGH";
   userId: string;
+  address?: string;
 }
 
 interface Filters {
@@ -43,6 +45,7 @@ export default function InquiriesPage() {
     priority: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenInquiryInfo, setIsOpenInquiryInfo] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | undefined>();
 
@@ -76,9 +79,12 @@ export default function InquiriesPage() {
       query.append("page", filters.page.toString());
       query.append("limit", filters.limit.toString());
 
-      console.log("query", query.toString());
+      console.log("Fetching page:", filters.page);
+      console.log("API query:", query.toString());
 
-      const response = await fetch(`/api/inquiries?${query.toString()}`);
+      const response = await fetch(
+        `/api/inquiries?${query.toString()}&excludeNullAddress=true`
+      );
       const data = await response.json();
 
       if (!response.ok) throw new Error(data.error || "Unknown error");
@@ -94,6 +100,7 @@ export default function InquiriesPage() {
   }, [filters]);
 
   const handleAddInquiry = async (data: any) => {
+    console.log("data", data);
     try {
       const response = await fetch("/api/inquiries", {
         method: "POST",
@@ -112,7 +119,7 @@ export default function InquiriesPage() {
     }
   };
 
-  console.log("selectedInquiry", selectedInquiry);
+  // console.log("selectedInquiry", selectedInquiry);
 
   const toUTCISOString = (localDateStr: string): string => {
     const localDate = new Date(localDateStr);
@@ -132,7 +139,7 @@ export default function InquiriesPage() {
       appointmentTime: toUTCISOString(data.appointmentTime),
     };
 
-    console.log("updatedData", updatedData);
+    // console.log("updatedData", updatedData);
 
     try {
       const response = await fetch(`/api/inquiries?id=${selectedInquiry.id}`, {
@@ -190,10 +197,24 @@ export default function InquiriesPage() {
   };
 
   const handleFilterChange = (key: keyof Filters, value: string | number) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
+    setFilters((prev) => {
+      const newFilters = {
+        ...prev,
+        [key]: value,
+        ...(key === "limit" ? { page: 1 } : {}), // Reset page to 1 when limit changes
+      };
+      console.log("Updated filters:", newFilters);
+      return newFilters;
+    });
   };
 
   const totalPages = Math.ceil(totalItems / filters.limit);
+
+  const handleInquiryInfo = (inquiry: Inquiry) => {
+    console.log("call huaa", inquiry);
+    setSelectedInquiry(inquiry);
+    setIsOpenInquiryInfo(true);
+  };
 
   return (
     <DashboardLayout>
@@ -365,15 +386,16 @@ export default function InquiriesPage() {
                     <tr
                       key={inquiry.id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      onClick={() => handleInquiryInfo(inquiry)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">
-                        {index + 1}
+                        {(filters.page - 1) * filters.limit + index + 1}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">
                         {inquiry.id}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white capitalize">
                           {inquiry.customerName}
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -418,17 +440,17 @@ export default function InquiriesPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-sm
-      ${
-        inquiry.status === "PENDING"
-          ? "bg-yellow-100 text-yellow-800"
-          : inquiry.status === "ACTIVE"
-          ? "bg-green-100 text-green-800"
-          : inquiry.status === "RESOLVED"
-          ? "bg-blue-100 text-blue-800"
-          : inquiry.status === "CLOSED"
-          ? "bg-gray-200 text-gray-900"
-          : "bg-red-100 text-red-800"
-      }`}
+                            ${
+                              inquiry.status === "PENDING"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : inquiry.status === "ACTIVE"
+                                ? "bg-green-100 text-green-800"
+                                : inquiry.status === "RESOLVED"
+                                ? "bg-blue-100 text-blue-800"
+                                : inquiry.status === "CLOSED"
+                                ? "bg-gray-200 text-gray-900"
+                                : "bg-red-100 text-red-800"
+                            }`}
                         >
                           {inquiry.status}
                         </span>
@@ -436,13 +458,19 @@ export default function InquiriesPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => openEditModal(inquiry)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openEditModal(inquiry);
+                            }}
                             className="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300"
                           >
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDeleteInquiry(inquiry.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteInquiry(inquiry.id);
+                            }}
                             className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                           >
                             Delete
@@ -461,7 +489,7 @@ export default function InquiriesPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Show
+                  Showing {inquiries.length} of {totalItems} entries
                 </span>
                 <select
                   className="mx-2 rounded-md border-gray-300 dark:border-gray-600 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-700 dark:text-gray-300"
@@ -506,6 +534,12 @@ export default function InquiriesPage() {
         mode={modalMode}
         inquiry={selectedInquiry as any}
         onSubmit={modalMode === "add" ? handleAddInquiry : handleEditInquiry}
+      />
+
+      <InquiryInfo
+        isOpen={isOpenInquiryInfo}
+        onClose={() => setIsOpenInquiryInfo(false)}
+        inquiry={selectedInquiry as any}
       />
     </DashboardLayout>
   );

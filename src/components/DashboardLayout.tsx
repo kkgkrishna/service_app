@@ -97,7 +97,7 @@ export default function DashboardLayout({
 
         {/* Page content */}
         <div className="pt-16 min-h-screen">
-          <div className="p-6 space-y-6">{children}</div>
+          <div className="p-6 space-y-">{children}</div>
         </div>
       </main>
     </div>

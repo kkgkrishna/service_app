@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";
-import { formatDateForInput } from "../../../Utils/Utils";
+import { formatDateForInput, stateCityMap, states } from "../../../Utils/Utils";
 
 const inquirySchema = z.object({
   customerName: z.string().min(3, "Name must be at least 3 characters"),
@@ -20,6 +20,17 @@ const inquirySchema = z.object({
   status: z.enum(["PENDING", "ACTIVE", "RESOLVED", "CLOSED"]),
   userId: z.string(), // add this
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]), // add this
+  alternateMobile: z
+    .string()
+    .regex(/^\d{10}$/, "Must be a valid 10-digit mobile number")
+    .optional(),
+  address: z.string().min(5, "Address must be at least 5 characters"),
+  landmark: z
+    .string()
+    .min(2, "Landmark must be at least 2 characters")
+    .optional(),
+  pincode: z.string().regex(/^\d{6}$/, "Must be a valid 6-digit pincode"),
+  state: z.string().min(1, "State is required"),
 });
 
 type InquiryFormData = z.infer<typeof inquirySchema>;
@@ -40,7 +51,12 @@ interface InquiryModalProps {
     amount: number;
     status: string;
     userId: string;
-    priority: "LOW" | "MEDIUM" | "HIGH"; // ✅ Add this line
+    priority: "LOW" | "MEDIUM" | "HIGH";
+    state: string;
+    alternateMobile: string;
+    address: string;
+    landmark: string;
+    pincode: string;
   };
 }
 
@@ -58,6 +74,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
     reset,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<InquiryFormData>({
     resolver: zodResolver(inquirySchema),
     defaultValues: {
@@ -75,11 +92,13 @@ const InquiryModal: FC<InquiryModalProps> = ({
   });
   const [formattedCallbackTime, setFormattedCallbackTime] = useState("");
   const [formattedAppointmentTime, setFormattedAppointmentTime] = useState("");
+  const [cities, setCities] = useState<string[]>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   useEffect(() => {
     if (inquiry) {
       // Format dates for datetime-local input
-      console.log("inquiry", inquiry.service);
+      console.log("inquiry", inquiry);
 
       const formattedCallback = formatDateForInput(inquiry.callbackTime);
       const formattedAppointment = formatDateForInput(inquiry.appointmentTime);
@@ -96,14 +115,40 @@ const InquiryModal: FC<InquiryModalProps> = ({
       );
       setValue("userId", inquiry.userId || "663b4d4ef2a0112a0f3d9e92");
       setValue("priority", inquiry.priority as "LOW" | "MEDIUM" | "HIGH");
+      setValue("state", inquiry.state);
 
       setFormattedCallbackTime(formattedCallback);
       setFormattedAppointmentTime(formattedAppointment);
 
       setValue("callbackTime", formattedCallback);
       setValue("appointmentTime", formattedAppointment);
+      setValue("alternateMobile", inquiry.alternateMobile || "");
+      setValue("address", inquiry.address || "");
+      setValue("landmark", inquiry.landmark || "");
+      setValue("pincode", inquiry.pincode || "");
+      setValue("city", inquiry.city || "");
     }
   }, [inquiry, setValue]);
+
+  useEffect(() => {
+    if (inquiry?.state) {
+      setCities(stateCityMap[inquiry.state] || []);
+    }
+  }, [inquiry]);
+
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === "state" && value.state) {
+        setLoadingCities(true);
+        setTimeout(() => {
+          setCities(value.state ? stateCityMap[value.state] || [] : []);
+          setValue("city", ""); // Reset city when state changes
+          setLoadingCities(false);
+        }, 300);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setValue]);
 
   const handleFormSubmit = async (data: InquiryFormData) => {
     try {
@@ -180,18 +225,18 @@ const InquiryModal: FC<InquiryModalProps> = ({
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            City*
+                            Alternate Mobile
                           </label>
                           <input
-                            type="text"
+                            type="tel"
                             className={`w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500 ${
-                              errors.city ? "border-red-500" : ""
+                              errors.alternateMobile ? "border-red-500" : ""
                             }`}
-                            {...register("city")}
+                            {...register("alternateMobile")}
                           />
-                          {errors.city && (
+                          {errors.alternateMobile && (
                             <p className="mt-1 text-sm text-red-600">
-                              {errors.city.message}
+                              {errors.alternateMobile.message}
                             </p>
                           )}
                         </div>
@@ -343,6 +388,118 @@ const InquiryModal: FC<InquiryModalProps> = ({
                           {errors.status.message}
                         </p>
                       )}
+                    </div>
+
+                    {/* Address Section */}
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                        Address Details
+                      </h4>
+                      <div className="grid grid-cols-1 gap-4">
+                        {/* Address */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Address*
+                          </label>
+                          <textarea
+                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500"
+                            rows={3}
+                            {...register("address")}
+                          />
+                          {errors.address && (
+                            <p className="mt-1 text-sm text-red-600">
+                              {errors.address.message}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Landmark */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Landmark
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500"
+                            {...register("landmark")}
+                          />
+                          {errors.landmark && (
+                            <p className="mt-1 text-sm text-red-600">
+                              {errors.landmark.message}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* State Dropdown */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            State*
+                          </label>
+                          <select
+                            className="w-full p-2 border rounded"
+                            {...register("state")}
+                          >
+                            <option value="">Select State</option>
+                            {states.map((state) => (
+                              <option key={state} value={state}>
+                                {state}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.state && (
+                            <p className="mt-1 text-sm text-red-600">
+                              {errors.state.message}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* City Dropdown with Loader */}
+                        <div className="relative">
+                          <select
+                            className="w-full p-2 border rounded"
+                            style={{ maxHeight: "40dvh", overflowY: "auto" }}
+                            {...register("city")}
+                            disabled={!watch("state") || loadingCities}
+                          >
+                            {loadingCities ? (
+                              <option>Loading cities...</option>
+                            ) : (
+                              <>
+                                <option value="">Select City</option>
+                                {cities.map((city) => (
+                                  <option key={city} value={city}>
+                                    {city}
+                                  </option>
+                                ))}
+                              </>
+                            )}
+                          </select>
+
+                          {/* Loading indicator */}
+                          {loadingCities && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70">
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Pincode */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Pincode*
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500"
+                            {...register("pincode")}
+                          />
+                          {errors.pincode && (
+                            <p className="mt-1 text-sm text-red-600">
+                              {errors.pincode.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

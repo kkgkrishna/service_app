@@ -10,7 +10,7 @@ export default function AppPage() {
     <div className="pb-20">
       <Banner />
       <CategoryGrid />
-      <NearbyStore />
+      {/* <NearbyStore /> */}
     </div>
   );
 }

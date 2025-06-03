@@ -1,27 +1,79 @@
 import { NextResponse } from "next/server";
-import engineersData from "@/data/engineers.json";
+import { prisma } from "@/lib/prisma";
 
-export async function PATCH(
-  request: Request,
+// GET /api/engineers/:id
+export async function GET(
+  req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const data = await request.json();
-    const engineer = engineersData.engineers.find((e) => e.id === params.id);
+    const engineer = await prisma.engineer.findUnique({
+      where: { id: params.id },
+      include: {
+        engineerCategories: {
+          include: { category: true },
+        },
+      },
+    });
 
-    if (!engineer) {
-      return NextResponse.json(
-        { error: "Engineer not found" },
-        { status: 404 }
-      );
+    if (!engineer)
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    const formatted = {
+      ...engineer,
+      categories: engineer.engineerCategories.map((ec) => ec.category),
+    };
+
+    return NextResponse.json(formatted);
+  } catch (error) {
+    console.error("GET /engineers/:id failed:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch engineer" },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH /api/engineers/:id
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const body = await req.json();
+    const { name, email, phone, city, status, categories } = body;
+
+    const updated = await prisma.engineer.update({
+      where: { id: params.id },
+      data: {
+        name,
+        email,
+        phone,
+        city,
+        status,
+      },
+    });
+
+    // Update category relationships
+    if (Array.isArray(categories)) {
+      await prisma.engineerCategory.deleteMany({
+        where: { engineerId: params.id },
+      });
+
+      if (categories.length > 0) {
+        const links = categories.map((categoryId: string) => ({
+          engineerId: params.id,
+          categoryId,
+        }));
+        await prisma.engineerCategory.createMany({
+          data: links,
+        });
+      }
     }
 
-    // In a real application, you would update the database
-    // For now, we'll just return the merged data
-    const updatedEngineer = { ...engineer, ...data };
-    return NextResponse.json(updatedEngineer);
+    return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating engineer:", error);
+    console.error("PATCH /engineers/:id failed:", error);
     return NextResponse.json(
       { error: "Failed to update engineer" },
       { status: 500 }
@@ -29,25 +81,24 @@ export async function PATCH(
   }
 }
 
+// DELETE /api/engineers/:id
 export async function DELETE(
-  _request: Request,
+  req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const engineer = engineersData.engineers.find((e) => e.id === params.id);
+    // Cleanup related categories first
+    await prisma.engineerCategory.deleteMany({
+      where: { engineerId: params.id },
+    });
 
-    if (!engineer) {
-      return NextResponse.json(
-        { error: "Engineer not found" },
-        { status: 404 }
-      );
-    }
+    await prisma.engineer.delete({
+      where: { id: params.id },
+    });
 
-    // In a real application, you would delete from the database
-    // For now, we'll just return a success response
-    return new NextResponse(null, { status: 204 });
+    return NextResponse.json({ message: "Engineer deleted successfully" });
   } catch (error) {
-    console.error("Error deleting engineer:", error);
+    console.error("DELETE /engineers/:id failed:", error);
     return NextResponse.json(
       { error: "Failed to delete engineer" },
       { status: 500 }
