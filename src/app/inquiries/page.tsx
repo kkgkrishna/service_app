@@ -6,6 +6,8 @@ import { useState, useCallback, useEffect } from "react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import InquiryInfo from "@/components/inquiries/InquiryInfo";
+import { FaIndianRupeeSign } from "react-icons/fa6";
+import InquiryCard from "@/components/inquiries/InquiryCard";
 
 interface Inquiry {
   id: string;
@@ -44,6 +46,7 @@ export default function InquiriesPage() {
     limit: 10,
     priority: "",
   });
+  const [isOpenAppointmentModal, setIsOpenAppointmentModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenInquiryInfo, setIsOpenInquiryInfo] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
@@ -317,213 +320,18 @@ export default function InquiriesPage() {
           </div>
         </div>
 
-        {/* Table Section */}
-        <div className="glass-card rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Sr. No.
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Inquiry ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Customer Details
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Service
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Schedule
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-4 text-center">
-                      <div className="flex justify-center items-center">
-                        <svg
-                          className="animate-spin h-5 w-5 text-primary-500"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        <span className="ml-2">Loading inquiries...</span>
-                      </div>
-                    </td>
-                  </tr>
-                ) : inquiries.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-4 text-center">
-                      No inquiries found
-                    </td>
-                  </tr>
-                ) : (
-                  inquiries.map((inquiry, index) => (
-                    <tr
-                      key={inquiry.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                      onClick={() => handleInquiryInfo(inquiry)}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">
-                        {(filters.page - 1) * filters.limit + index + 1}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">
-                        {inquiry.id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white capitalize">
-                          {inquiry.customerName}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {inquiry.mobileNo}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {inquiry.city}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 dark:text-white">
-                          {inquiry.service}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col md:flex-row gap-2">
-                          <div className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-900 dark:text-yellow-300 px-4 py-2 rounded-lg shadow-sm">
-                            <div className="text-xs font-semibold uppercase">
-                              Callback
-                            </div>
-                            <div className="text-sm font-medium">
-                              {format(
-                                new Date(inquiry.callbackTime),
-                                "dd MMM yyyy, h:mm a"
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="flex-1 bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-300 px-4 py-2 rounded-lg shadow-sm">
-                            <div className="text-xs font-semibold uppercase">
-                              Appointment
-                            </div>
-                            <div className="text-sm font-medium">
-                              {format(
-                                new Date(inquiry.appointmentTime),
-                                "dd MMM yyyy, h:mm a"
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-sm
-                            ${
-                              inquiry.status === "PENDING"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : inquiry.status === "ACTIVE"
-                                ? "bg-green-100 text-green-800"
-                                : inquiry.status === "RESOLVED"
-                                ? "bg-blue-100 text-blue-800"
-                                : inquiry.status === "CLOSED"
-                                ? "bg-gray-200 text-gray-900"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                        >
-                          {inquiry.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openEditModal(inquiry);
-                            }}
-                            className="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteInquiry(inquiry.id);
-                            }}
-                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm px-4 py-3 border-t border-gray-200/50 dark:border-gray-700/50 sm:px-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Showing {inquiries.length} of {totalItems} entries
-                </span>
-                <select
-                  className="mx-2 rounded-md border-gray-300 dark:border-gray-600 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-700 dark:text-gray-300"
-                  value={filters.limit}
-                  onChange={(e) =>
-                    handleFilterChange("limit", parseInt(e.target.value))
-                  }
-                >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                </select>
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  entries
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm hover:bg-white/80 dark:hover:bg-gray-600/80 disabled:opacity-50 transition-colors"
-                  onClick={() => handleFilterChange("page", filters.page - 1)}
-                  disabled={filters.page === 1 || isLoading}
-                >
-                  Previous
-                </button>
-                <button
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm hover:bg-white/80 dark:hover:bg-gray-600/80 disabled:opacity-50 transition-colors"
-                  onClick={() => handleFilterChange("page", filters.page + 1)}
-                  disabled={filters.page === totalPages || isLoading}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          </div>
+        {/* Inquiry Card */}
+        <div className="flex gap-4">
+          {inquiries.map((inquiry) => (
+            <InquiryCard
+              inquiry={inquiry as any}
+              onSaveCallback={() => console.log("Save callback")}
+              onSaveAppointment={() => console.log("Save appointment")}
+              onView={() => console.log("View")}
+              onRemark={() => console.log("Remark")}
+              onCancel={() => console.log("Cancel")}
+            />
+          ))}
         </div>
       </div>
 

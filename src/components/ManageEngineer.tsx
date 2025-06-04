@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
+import { AnimatePresence, motion } from "framer-motion";
+import { IoIosCloseCircle } from "react-icons/io";
 
 interface Category {
   id: string;
@@ -16,6 +18,7 @@ interface Engineer {
   phone: string;
   city: string;
   status: boolean;
+  address: string;
   createdAt: Date;
   updatedAt: Date;
   categories: { id: string; name: string }[];
@@ -241,90 +244,113 @@ export default function ManageEngineer({
         </div>
       </div>
 
-      {detailModalOpen && selectedEngineer && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 relative">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              Engineer Details
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-800 dark:text-gray-200 text-sm">
-              <div>
-                <strong>ID:</strong>{" "}
-                <span className="ml-1">{selectedEngineer.id}</span>
+      <AnimatePresence>
+        {detailModalOpen && selectedEngineer && (
+          <div className="fixed inset-0 z-50 flex justify-end bg-black bg-opacity-50">
+            <motion.div
+              key="right-popup"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "tween", duration: 0.3 }}
+              className="w-full sm:w-[80%] md:w-[60%] lg:w-[40%] h-full bg-white dark:bg-gray-900 shadow-xl p-6 overflow-y-auto"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Engineer Details
+                </h2>
+                <IoIosCloseCircle
+                  className="text-4xl text-gray-500 cursor-pointer hover:text-gray-700 hover:scale-110 transition-all duration-300 hover:rotate-180"
+                  onClick={() => {
+                    setDetailModalOpen(false);
+                    setSelectedEngineer(null);
+                  }}
+                />
               </div>
-              <div>
-                <strong>Name:</strong>{" "}
-                <span className="ml-1">{selectedEngineer.name}</span>
-              </div>
-              <div>
-                <strong>Email:</strong>{" "}
-                <span className="ml-1">{selectedEngineer.email}</span>
-              </div>
-              <div>
-                <strong>Phone:</strong>{" "}
-                <span className="ml-1">{selectedEngineer.phone}</span>
-              </div>
-              <div>
-                <strong>City:</strong>{" "}
-                <span className="ml-1">{selectedEngineer.city}</span>
-              </div>
-              <div>
-                <strong>Status:</strong>{" "}
-                <span
-                  className={`ml-1 font-medium ${
-                    selectedEngineer.status ? "text-green-600" : "text-red-500"
-                  }`}
-                >
-                  {selectedEngineer.status ? "Active" : "Inactive"}
-                </span>
-              </div>
-              <div>
-                <strong>Created:</strong>{" "}
-                <span className="ml-1">
-                  {new Date(selectedEngineer.createdAt).toLocaleString()}
-                </span>
-              </div>
-              <div>
-                <strong>Updated:</strong>{" "}
-                <span className="ml-1">
-                  {new Date(selectedEngineer.updatedAt).toLocaleString()}
-                </span>
-              </div>
-            </div>
-            <div className="mt-6">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                Categories:
-              </h3>
-              {selectedEngineer.categories &&
-              selectedEngineer.categories.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {selectedEngineer.categories.map((cat: any) => (
-                    <span
-                      key={cat.id}
-                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium dark:bg-blue-700 dark:text-white"
-                    >
-                      {cat.name}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">No categories assigned.</p>
-              )}
-            </div>
-            <div className="flex justify-end mt-8">
-              <button
-                onClick={() => {
-                  setDetailModalOpen(false);
-                  setSelectedEngineer(null);
-                }}
-                className="px-5 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-              >
-                Close
-              </button>
-            </div>
+
+              {/* Info Table */}
+              <table className="w-full text-sm text-left text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-700 rounded-3xl">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {/* <tr>
+                    <th className="px-4 py-2 font-semibold w-1/3">ID</th>
+                    <td className="px-4 py-2 break-all">
+                      {selectedEngineer.id}
+                    </td>
+                  </tr> */}
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">Name</th>
+                    <td className="px-4 py-2">{selectedEngineer.name}</td>
+                  </tr>
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">Email</th>
+                    <td className="px-4 py-2">{selectedEngineer.email}</td>
+                  </tr>
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">Phone</th>
+                    <td className="px-4 py-2">{selectedEngineer.phone}</td>
+                  </tr>
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">Address</th>
+                    <td className="px-4 py-2">{selectedEngineer.address}</td>
+                  </tr>{" "}
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">City</th>
+                    <td className="px-4 py-2">{selectedEngineer.city}</td>
+                  </tr>
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">Status</th>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`font-medium ${
+                          selectedEngineer.status
+                            ? "text-green-600"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {selectedEngineer.status ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">Created</th>
+                    <td className="px-4 py-2">
+                      {new Date(selectedEngineer.createdAt).toLocaleString()}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">Updated</th>
+                    <td className="px-4 py-2">
+                      {new Date(selectedEngineer.updatedAt).toLocaleString()}
+                    </td>
+                  </tr>{" "}
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">Categories</th>
+                    <td className="px-4 py-2">
+                      {selectedEngineer.categories?.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {selectedEngineer.categories.map((cat: any) => (
+                            <span
+                              key={cat.id}
+                              className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium dark:bg-blue-700 dark:text-white"
+                            >
+                              {cat.name}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">
+                          No categories assigned.
+                        </p>
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }
