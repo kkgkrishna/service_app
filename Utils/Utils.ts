@@ -17,7 +17,7 @@ export const stateCityMap: Record<string, string[]> = {
   WestBengal: ["Kolkata", "Howrah", "Durgapur"],
   UttarPradesh: [
     "Lucknow",
-    "Kanpur",
+    "Kanpur Nagar",
     "Agra",
     "Varanasi",
     "Allahabad",
@@ -91,3 +91,27 @@ const upCities = getCitiesByState("UttarPradesh");
 // Get all available states
 // console.log(states);
 // Returns: ["Maharashtra", "Delhi", ..., "UttarPradesh"]
+
+// utils/auth.ts
+
+export function decodeToken(token: string) {
+  try {
+    const payloadBase64 = token.split(".")[1];
+    const decodedPayload = atob(payloadBase64);
+    return JSON.parse(decodedPayload);
+  } catch (error) {
+    console.error("Invalid token format", error);
+    return null;
+  }
+}
+
+export function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("auth_token");
+}
+
+export function getUserFromToken(): any | null {
+  const token = getToken();
+  if (!token) return null;
+  return decodeToken(token);
+}

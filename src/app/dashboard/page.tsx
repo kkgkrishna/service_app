@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "react-hot-toast";
+import { getUserFromToken } from "../../../Utils/Utils";
 
 interface User {
   id: string;
@@ -82,6 +83,8 @@ export default function DashboardPage() {
 
     fetchUser();
   }, [router]);
+
+
 
   if (isLoading) {
     return (

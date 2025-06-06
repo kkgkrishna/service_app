@@ -69,6 +69,7 @@ export async function POST(request: Request) {
     // 🍪 Set secure cookie
     const response = NextResponse.json({
       message: "Login successful",
+      token: token,
       user: {
         id: user.id,
         email: user.email,

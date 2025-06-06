@@ -7,6 +7,10 @@ import toast from "react-hot-toast";
 import InquiryInfo from "@/components/inquiries/InquiryInfo";
 import InquiryCard from "@/components/inquiries/InquiryCard";
 import InquiryForm from "@/components/inquiries/InquiryForm";
+import { FiPlus } from "react-icons/fi";
+import { useGetAllInquiriesByUserIdQuery } from "@/store/apiSlice";
+import { getUserFromToken } from "../../../Utils/Utils";
+import CustomLoader from "../../../CustomPages/CustomLoader";
 
 interface Inquiry {
   id: string;
@@ -61,9 +65,19 @@ export default function InquiriesPage() {
   const [isOpenInquiryInfo, setIsOpenInquiryInfo] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | undefined>();
-
+  const [userData, setUserData] = useState<any | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [totalItems, setTotalItems] = useState(0);
+
+  const {
+    data: inquiriesData,
+    isLoading: isLoadingInquiries,
+    refetch: refetchInquiries,
+  } =
+    useGetAllInquiriesByUserIdQuery(userData?.userId, {
+      skip: !userData?.userId,
+    });
+
   const blankInquiry: Inquiry = {
     id: "",
     customerName: "",
@@ -77,6 +91,20 @@ export default function InquiriesPage() {
     priority: "HIGH",
     userId: "",
   };
+
+  useEffect(() => {
+    const userData = getUserFromToken();
+
+    setUserData(userData);
+  }, []);
+
+  useEffect(() => {
+    if (inquiriesData && (inquiriesData as any).inquiries) {
+      const data = (inquiriesData as any).inquiries;
+      // console.log("inquiriesData", data);
+      setInquiries(data);
+    }
+  }, [inquiriesData]);
 
   // Fetch inquiries from API
   const fetchInquiries = useCallback(async () => {
@@ -241,6 +269,7 @@ export default function InquiriesPage() {
 
   return (
     <DashboardLayout>
+      {isLoadingInquiries && <CustomLoader />}
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -252,16 +281,17 @@ export default function InquiriesPage() {
               Track and manage all service inquiries
             </p>
           </div>
+
           <button
             // onClick={openAddModal}
+
             onClick={() => {
               setIsAddInquiryFormOpen(true);
               setModalMode("add");
             }}
-            className="inline-flex items-center px-4 py-2 bg-[var(--gradient-primary)] hover:opacity-90 text-gray-700 dark:text-gray-300 rounded-lg transition-all shadow-lg hover:shadow-xl"
+            className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all shadow-lg hover:shadow-xl"
           >
-            <span className="mr-2">➕</span>
-            Add New Inquiry
+            <FiPlus className="mr-2 text- text-white" /> Create Inquiry
           </button>
         </div>
 
@@ -355,6 +385,7 @@ export default function InquiriesPage() {
               onView={() => console.log("View")}
               onRemark={() => console.log("Remark")}
               onCancel={() => console.log("Cancel")}
+              refetchInquiries={refetchInquiries}
             />
           ))}
         </div>
@@ -369,11 +400,11 @@ export default function InquiriesPage() {
         onSubmit={modalMode === "add" ? handleAddInquiry : handleEditInquiry}
       />
 
-      <InquiryInfo
+      {/* <InquiryInfo
         isOpen={isOpenInquiryInfo}
         onClose={() => setIsOpenInquiryInfo(false)}
         inquiry={selectedInquiry as any}
-      />
+      /> */}
 
       {isAddInquiryFormOpen && (
         <InquiryForm

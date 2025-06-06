@@ -136,7 +136,7 @@ model InquirySubCategory {
 
 enum InquiryStatus {
   PENDING
-  ACTIVE
+  ASSIGNED
   RESOLVED
   CLOSED
 }

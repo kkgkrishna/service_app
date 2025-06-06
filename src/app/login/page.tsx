@@ -59,6 +59,10 @@ export default function LoginPage() {
       // Show success message
       toast.success("Login successful! Redirecting...");
 
+      if (data.token) {
+        localStorage.setItem("auth_token", data.token);
+      }
+
       // Get the redirect path from URL or default to dashboard
       const redirectTo = searchParams.get("from") || "/dashboard";
 
