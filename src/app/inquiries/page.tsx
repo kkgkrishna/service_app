@@ -3,11 +3,10 @@
 import DashboardLayout from "@/components/DashboardLayout";
 import InquiryModal from "@/components/inquiries/InquiryModal";
 import { useState, useCallback, useEffect } from "react";
-import { format } from "date-fns";
 import toast from "react-hot-toast";
 import InquiryInfo from "@/components/inquiries/InquiryInfo";
-import { FaIndianRupeeSign } from "react-icons/fa6";
 import InquiryCard from "@/components/inquiries/InquiryCard";
+import InquiryForm from "@/components/inquiries/InquiryForm";
 
 interface Inquiry {
   id: string;
@@ -22,6 +21,17 @@ interface Inquiry {
   priority?: "LOW" | "MEDIUM" | "HIGH";
   userId: string;
   address?: string;
+  note?: string;
+  alternateMobile?: string;
+  email?: string;
+  remark?: string;
+  cancelInquire?: boolean;
+  cancelReason?: string;
+  feedback?: string;
+  invoiceCustomer?: string;
+  inquiryCategories?: string[];
+  inquirySubCategories?: string[];
+  engineerName?: string;
 }
 
 interface Filters {
@@ -46,7 +56,7 @@ export default function InquiriesPage() {
     limit: 10,
     priority: "",
   });
-  const [isOpenAppointmentModal, setIsOpenAppointmentModal] = useState(false);
+  const [isAddInquiryFormOpen, setIsAddInquiryFormOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenInquiryInfo, setIsOpenInquiryInfo] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
@@ -104,22 +114,32 @@ export default function InquiriesPage() {
 
   const handleAddInquiry = async (data: any) => {
     console.log("data", data);
-    try {
-      const response = await fetch("/api/inquiries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    // const updatedData = {
+    //   ...data,
+    //   callbackTime: toUTCISOString(data.callbackTime),
+    //   appointmentTime: toUTCISOString(data.appointmentTime),
+    //   inquiryCategories: [data.inquiryCategories],
+    //   inquirySubCategories: [data.inquirySubCategories],
+    // };
 
-      if (!response.ok) throw new Error("Failed to create inquiry");
+    // console.log("updatedData", updatedData);
 
-      toast.success("Inquiry created successfully");
-      setIsModalOpen(false);
-      fetchInquiries();
-    } catch (error) {
-      console.error("Error creating inquiry:", error);
-      toast.error("Failed to create inquiry");
-    }
+    // try {
+    //   const response = await fetch("/api/inquiries", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(data),
+    //   });
+
+    //   if (!response.ok) throw new Error("Failed to create inquiry");
+
+    //   toast.success("Inquiry created successfully");
+    //   setIsModalOpen(false);
+    //   fetchInquiries();
+    // } catch (error) {
+    //   console.error("Error creating inquiry:", error);
+    //   toast.error("Failed to create inquiry");
+    // }
   };
 
   // console.log("selectedInquiry", selectedInquiry);
@@ -233,7 +253,11 @@ export default function InquiriesPage() {
             </p>
           </div>
           <button
-            onClick={openAddModal}
+            // onClick={openAddModal}
+            onClick={() => {
+              setIsAddInquiryFormOpen(true);
+              setModalMode("add");
+            }}
             className="inline-flex items-center px-4 py-2 bg-[var(--gradient-primary)] hover:opacity-90 text-gray-700 dark:text-gray-300 rounded-lg transition-all shadow-lg hover:shadow-xl"
           >
             <span className="mr-2">➕</span>
@@ -321,9 +345,10 @@ export default function InquiriesPage() {
         </div>
 
         {/* Inquiry Card */}
-        <div className="flex gap-4">
-          {inquiries.map((inquiry) => (
+        <div className="flex flex-col gap-4">
+          {inquiries.map((inquiry, index) => (
             <InquiryCard
+              key={index}
               inquiry={inquiry as any}
               onSaveCallback={() => console.log("Save callback")}
               onSaveAppointment={() => console.log("Save appointment")}
@@ -349,6 +374,14 @@ export default function InquiriesPage() {
         onClose={() => setIsOpenInquiryInfo(false)}
         inquiry={selectedInquiry as any}
       />
+
+      {isAddInquiryFormOpen && (
+        <InquiryForm
+          isOpen={isAddInquiryFormOpen}
+          onClose={() => setIsAddInquiryFormOpen(false)}
+          mode={modalMode}
+        />
+      )}
     </DashboardLayout>
   );
 }

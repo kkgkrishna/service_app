@@ -1,29 +1,33 @@
 "use client";
 
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, use } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { format } from "date-fns";
 import { formatDateForInput, stateCityMap, states } from "../../../Utils/Utils";
+import {
+  useGetAllCategoriesQuery,
+  useGetAllSubCategoriesByCategoryIdQuery,
+} from "@/store/apiSlice";
+import CustomLoader from "../../../CustomPages/CustomLoader";
 
-const inquirySchema = z.object({
+export const inquirySchema = z.object({
   customerName: z.string().min(3, "Name must be at least 3 characters"),
+  email: z.string().email("Invalid email format").optional(),
   mobileNo: z
     .string()
     .regex(/^\d{10}$/, "Must be a valid 10-digit mobile number"),
+  alternateMobile: z
+    .string()
+    .regex(/^\d{10}$/, "Must be a valid 10-digit mobile number")
+    .optional(),
   city: z.string().min(2, "City must be at least 2 characters"),
   service: z.string().min(1, "Please select a service"),
   amount: z.number().min(0, "Amount must be positive"),
   callbackTime: z.string().min(1, "Callback time is required"),
   appointmentTime: z.string().min(1, "Appointment time is required"),
   status: z.enum(["PENDING", "ACTIVE", "RESOLVED", "CLOSED"]),
-  userId: z.string(), // add this
-  priority: z.enum(["LOW", "MEDIUM", "HIGH"]), // add this
-  alternateMobile: z
-    .string()
-    .regex(/^\d{10}$/, "Must be a valid 10-digit mobile number")
-    .optional(),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
   address: z.string().min(5, "Address must be at least 5 characters"),
   landmark: z
     .string()
@@ -31,6 +35,22 @@ const inquirySchema = z.object({
     .optional(),
   pincode: z.string().regex(/^\d{6}$/, "Must be a valid 6-digit pincode"),
   state: z.string().min(1, "State is required"),
+
+  // Optional inquiry details
+  remark: z.string().optional(),
+  cancelInquire: z.boolean().optional(),
+  cancelReason: z.string().optional(),
+  feedback: z.string().optional(),
+  note: z.string().optional(),
+  invoiceCustomer: z.string().optional(),
+
+  // Foreign Keys
+  userId: z.string(),
+  engineerId: z.string().optional(),
+
+  // Category and Subcategory IDs as string arrays
+  inquiryCategories: z.array(z.string()).optional(),
+  inquirySubCategories: z.array(z.string()).optional(),
 });
 
 type InquiryFormData = z.infer<typeof inquirySchema>;
@@ -57,6 +77,7 @@ interface InquiryModalProps {
     address: string;
     landmark: string;
     pincode: string;
+    note: string;
   };
 }
 
@@ -88,17 +109,28 @@ const InquiryModal: FC<InquiryModalProps> = ({
       status: "PENDING",
       userId: "663b4d4ef2a0112a0f3d9e92", // static default
       priority: "HIGH", // static default
+      note: "",
     },
   });
   const [formattedCallbackTime, setFormattedCallbackTime] = useState("");
   const [formattedAppointmentTime, setFormattedAppointmentTime] = useState("");
   const [cities, setCities] = useState<string[]>([]);
   const [loadingCities, setLoadingCities] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<any>("");
+
+  const { data: categoriesApiData, isLoading: isLoadingCategories } =
+    useGetAllCategoriesQuery();
+  const { data: subCategoriesApiData, isLoading: isLoadingSubCategories } =
+    useGetAllSubCategoriesByCategoryIdQuery(selectedCategory, {
+      skip: !selectedCategory,
+    });
+
+  // console.log("subCategoriesApiData", subCategoriesApiData);
 
   useEffect(() => {
     if (inquiry) {
       // Format dates for datetime-local input
-      console.log("inquiry", inquiry);
+      // console.log("inquiry", inquiry);
 
       const formattedCallback = formatDateForInput(inquiry.callbackTime);
       const formattedAppointment = formatDateForInput(inquiry.appointmentTime);
@@ -151,8 +183,10 @@ const InquiryModal: FC<InquiryModalProps> = ({
   }, [watch, setValue]);
 
   const handleFormSubmit = async (data: InquiryFormData) => {
+    console.log("click huaa");
     try {
       setIsSubmitting(true);
+      console.log("data", data);
       await onSubmit(data);
       reset();
       onClose();
@@ -166,8 +200,14 @@ const InquiryModal: FC<InquiryModalProps> = ({
 
   if (!isOpen) return null;
 
+  const handleSubCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    // console.log("selectedCategory", selectedCategory);
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
+      {(isLoadingCategories || isLoadingSubCategories) && <CustomLoader />}
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         <div
           className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75"
@@ -239,6 +279,23 @@ const InquiryModal: FC<InquiryModalProps> = ({
                               {errors.alternateMobile.message}
                             </p>
                           )}
+                        </div>{" "}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Email Id
+                          </label>
+                          <input
+                            type="tel"
+                            className={`w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500 ${
+                              errors.email ? "border-red-500" : ""
+                            }`}
+                            {...register("email")}
+                          />
+                          {errors.email && (
+                            <p className="mt-1 text-sm text-red-600">
+                              {errors.email.message}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -251,29 +308,77 @@ const InquiryModal: FC<InquiryModalProps> = ({
                       <div className="grid grid-cols-1 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Service Type*
+                            Category*
                           </label>
                           <select
                             className={`w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500 ${
-                              errors.service ? "border-red-500" : ""
+                              errors.inquiryCategories ? "border-red-500" : ""
                             }`}
-                            {...register("service")}
+                            value={watch("inquiryCategories")?.[0] || ""}
+                            onChange={(e) => {
+                              const categoryId = e.target.value;
+                              setValue("inquiryCategories", [categoryId]);
+                              handleSubCategoryChange(categoryId);
+                            }}
                           >
-                            <option value="">Select a service</option>
-                            <option>
-                              Split / Window (Deep Cleaning with Jet Pump)
-                            </option>
-                            <option>Split / Window (FOAM)</option>
-                            <option>General Service</option>
-                            <option>AC Repair</option>
+                            <option value="">Select a category</option>
+                            {categoriesApiData?.map((category) => (
+                              <option key={category.id} value={category.id}>
+                                {category.name}
+                              </option>
+                            ))}
                           </select>
-                          {errors.service && (
+                          {errors.inquiryCategories && (
                             <p className="mt-1 text-sm text-red-600">
-                              {errors.service.message}
+                              {errors.inquiryCategories.message}
                             </p>
                           )}
                         </div>
                         <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Sub Category*
+                          </label>
+                          <select
+                            className={`w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500 ${
+                              errors.inquirySubCategories
+                                ? "border-red-500"
+                                : ""
+                            }`}
+                            value={watch("inquirySubCategories")?.[0] || ""}
+                            onChange={(e) => {
+                              const subCategoryId = e.target.value;
+                              setValue("inquirySubCategories", [subCategoryId]);
+                            }}
+                          >
+                            <option value="">Select a sub category</option>
+                            {subCategoriesApiData?.subcategories?.map(
+                              (subCategory: any) => (
+                                <option
+                                  key={subCategory.id}
+                                  value={subCategory.id}
+                                >
+                                  {subCategory.subCategoryName}
+                                </option>
+                              )
+                            )}
+                          </select>
+                          {errors.inquirySubCategories && (
+                            <p className="mt-1 text-sm text-red-600">
+                              {errors.inquirySubCategories.message}
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Note
+                          </label>
+                          <textarea
+                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500"
+                            rows={3}
+                            {...register("note")}
+                          />
+                        </div>
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Amount*
                           </label>
@@ -295,12 +400,12 @@ const InquiryModal: FC<InquiryModalProps> = ({
                               {errors.amount.message}
                             </p>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                       {/* User ID (hidden or read-only if fixed) */}
                       <input type="hidden" {...register("userId")} />
                       {/* Priority */}
-                      <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
+                      {/* <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
                         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                           Priority
                         </h4>
@@ -319,11 +424,11 @@ const InquiryModal: FC<InquiryModalProps> = ({
                             {errors.priority.message}
                           </p>
                         )}
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Schedule Section */}
-                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
+                    {/* <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
                       <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                         Schedule
                       </h4>
@@ -365,10 +470,10 @@ const InquiryModal: FC<InquiryModalProps> = ({
                           )}
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Status Section */}
-                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
+                    {/* <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg h-full flex flex-col">
                       <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                         Status
                       </h4>
@@ -388,7 +493,7 @@ const InquiryModal: FC<InquiryModalProps> = ({
                           {errors.status.message}
                         </p>
                       )}
-                    </div>
+                    </div> */}
 
                     {/* Address Section */}
                     <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">

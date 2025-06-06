@@ -19,31 +19,40 @@ model User {
 }
 
 model Inquiry {
-  id              String         @id @default(auto()) @map("_id") @db.ObjectId
-  customerName    String
-  mobileNo        String
-  city            String
-  service         String
-  callbackTime    DateTime
-  appointmentTime DateTime?
-  amount          Float          @default(0)
-  status          InquiryStatus  @default(PENDING)
-  priority        String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  service   String?  @db.String // <-- make it optional
+  customerName         String
+  mobileNo             String
+  city                 String
+  callbackTime         DateTime?
+  email                String?
+  appointmentTime      DateTime?
+  amount               Float                 @default(0)
+  status               InquiryStatus         @default(PENDING)
+  priority             String
+  alternateMobile      String?
+  address              String?
+  landmark             String?
+  pincode              String
+  state                String
+  remark               String?
+  cancelInquire        Boolean?               @default(false)
+  cancelReason         String?
+  feedback             String?
+  note                 String?
+  invoiceCustomer      String?
 
-  userId          String         @db.ObjectId
-  user            User           @relation("UserToInquiries", fields: [userId], references: [id])
+  userId               String?                @db.ObjectId
+  user                 User?                  @relation("UserToInquiries", fields: [userId], references: [id])
 
-  engineerId      String?        @db.ObjectId
-  engineer        Engineer?      @relation("EngineerToInquiries", fields: [engineerId], references: [id])
+  engineerId           String?               @db.ObjectId
+  engineer             Engineer?             @relation("EngineerToInquiries", fields: [engineerId], references: [id])
 
-  alternateMobile String?
-  address         String?
-  landmark        String?
-  pincode         String
-  state           String
+  inquiryCategories    InquiryCategory[]
+  inquirySubCategories InquirySubCategory[]
 
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 }
 
 model Engineer {
@@ -66,10 +75,26 @@ model Category {
   id                 String             @id @default(auto()) @map("_id") @db.ObjectId
   name               String             @unique
 
+  subCategories      SubCategory[]
   engineerCategories EngineerCategory[]
+  inquiryCategories  InquiryCategory[]
 
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
+}
+
+model SubCategory {
+  id                    String                @id @default(auto()) @map("_id") @db.ObjectId
+  subCategoryName       String
+  price                 Float
+
+  categoryId            String                @db.ObjectId
+  category              Category              @relation(fields: [categoryId], references: [id])
+
+  inquirySubCategories  InquirySubCategory[]
+
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
 }
 
 model EngineerCategory {
@@ -83,6 +108,30 @@ model EngineerCategory {
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+}
+
+model InquiryCategory {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  inquiryId  String     @db.ObjectId
+  categoryId String     @db.ObjectId
+
+  inquiry    Inquiry    @relation(fields: [inquiryId], references: [id])
+  category   Category   @relation(fields: [categoryId], references: [id])
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model InquirySubCategory {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  inquiryId      String      @db.ObjectId
+  subCategoryId  String      @db.ObjectId
+
+  inquiry        Inquiry     @relation(fields: [inquiryId], references: [id])
+  subCategory    SubCategory @relation(fields: [subCategoryId], references: [id])
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 }
 
 enum InquiryStatus {

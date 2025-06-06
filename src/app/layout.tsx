@@ -1,10 +1,9 @@
+// app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Josefin_Sans } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/context/ThemeContext";
-import { Toaster } from "react-hot-toast";
-import { Josefin_Sans } from "next/font/google";
 import { Constants } from "@/constant/constant";
+import ClientProvider from "@/components/Provider/ClientProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,10 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} ${josefin.variable} font-josefin`}>
-        <ThemeProvider>
-          {children}
-          <Toaster position="top-right" />
-        </ThemeProvider>
+        <ClientProvider>{children}</ClientProvider>
       </body>
     </html>
   );
