@@ -15,7 +15,7 @@ function InquiryForm({
   onClose,
   mode,
 }: {
-  isOpen: boolean;
+  isOpen: boolean; 
   onClose: () => void;
   mode: "add" | "edit";
 }) {
@@ -23,6 +23,7 @@ function InquiryForm({
   const [stateName, setStateName] = useState<any>("");
   const [cities, setCities] = useState<any[]>([]);
   const [loadingCities, setLoadingCities] = useState(false);
+  const [formErrors, setFormErrors] = useState<any>({});
   const [inquiryData, setInquiryData] = useState<any>({
     customerName: "",
     mobileNo: "",
@@ -75,18 +76,44 @@ function InquiryForm({
     });
   };
 
+  const validateForm = () => {
+    const errors: any = {};
+
+    if (!inquiryData.customerName.trim())
+      errors.customerName = "Customer name is required";
+    if (!inquiryData.mobileNo.trim())
+      errors.mobileNo = "Mobile number is required";
+    if (!inquiryData.alternateMobile.trim())
+      errors.alternateMobile = "Alternate mobile number is required";
+    if (!inquiryData.email.trim()) errors.email = "Email is required";
+
+    if (!inquiryData.inquiryCategories.length)
+      errors.inquiryCategories = "Category is required";
+    if (!inquiryData.inquirySubCategories.length)
+      errors.inquirySubCategories = "Sub Category is required";
+    if (!inquiryData.address.trim()) errors.address = "Address is required";
+    if (!inquiryData.state.trim()) errors.state = "State is required";
+    if (!inquiryData.city.trim()) errors.city = "City is required";
+    if (!inquiryData.pincode.trim()) errors.pincode = "Pincode is required";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) return;
     console.log("inquiryData", inquiryData);
-    try {
-      const response = await createInquiry(inquiryData);
-      console.log("response", response);
-      if (response.data) {
-        toast.success("Inquiry created successfully");
-        onClose();
-      }
-    } catch (error) {
-      console.log("error", error);
-    }
+
+    // try {
+    //   const response = await createInquiry(inquiryData);
+    //   console.log("response", response);
+    //   if (response.data) {
+    //     toast.success("Inquiry created successfully");
+    //     onClose();
+    //   }
+    // } catch (error) {
+    //   console.log("error", error);
+    // }
   };
 
   return (
@@ -128,6 +155,11 @@ function InquiryForm({
                             });
                           }}
                         />
+                        {formErrors.customerName && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.customerName}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -143,6 +175,11 @@ function InquiryForm({
                             });
                           }}
                         />
+                        {formErrors.mobileNo && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.mobileNo}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -158,6 +195,11 @@ function InquiryForm({
                             });
                           }}
                         />
+                        {formErrors.alternateMobile && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.alternateMobile}
+                          </p>
+                        )}
                       </div>{" "}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -173,6 +215,11 @@ function InquiryForm({
                             });
                           }}
                         />
+                        {formErrors.email && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.email}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -200,6 +247,11 @@ function InquiryForm({
                             </option>
                           ))}
                         </select>
+                        {formErrors.inquiryCategories && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.inquiryCategories}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -226,6 +278,11 @@ function InquiryForm({
                             )
                           )}
                         </select>
+                        {formErrors.inquirySubCategories && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.inquirySubCategories}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -266,6 +323,11 @@ function InquiryForm({
                             });
                           }}
                         />
+                        {formErrors.address && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.address}
+                          </p>
+                        )}
                       </div>
 
                       {/* Landmark */}
@@ -283,6 +345,11 @@ function InquiryForm({
                             });
                           }}
                         />
+                        {formErrors.landmark && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.landmark}
+                          </p>
+                        )}
                       </div>
 
                       {/* State Dropdown */}
@@ -307,6 +374,11 @@ function InquiryForm({
                             </option>
                           ))}
                         </select>
+                        {formErrors.state && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.state}
+                          </p>
+                        )}
                       </div>
 
                       {/* City Dropdown with Loader */}
@@ -335,6 +407,11 @@ function InquiryForm({
                             </>
                           )}
                         </select>
+                        {formErrors.city && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.city}
+                          </p>
+                        )}
                       </div>
 
                       {/* Pincode */}
@@ -352,6 +429,11 @@ function InquiryForm({
                             });
                           }}
                         />
+                        {formErrors.pincode && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.pincode}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

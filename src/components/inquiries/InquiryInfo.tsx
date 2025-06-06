@@ -1,6 +1,5 @@
 "use client";
 
-import { Inquiry } from "@/types";
 import React from "react";
 import { formatDateForInput } from "../../../Utils/Utils";
 import { AnimatePresence, motion } from "framer-motion";

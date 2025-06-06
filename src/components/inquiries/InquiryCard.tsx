@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { FaArrowRightLong } from "react-icons/fa6";
 
 interface Inquiry {
   id: string;
@@ -24,6 +25,23 @@ interface Inquiry {
   engineerId?: string | null;
   createdAt: string;
   updatedAt: string;
+  remark?: string;
+  feedback?: string;
+  cancelReason?: string;
+  note?: string;
+  invoiceCustomer?: string;
+  cancelInquire?: boolean;
+  inquiryCategories: {
+    category: {
+      name: string;
+    };
+  }[];
+  inquirySubCategories: {
+    subCategory: {
+      subCategoryName: string;
+      price: number;
+    };
+  }[];
 }
 
 interface InquiryCardProps {
@@ -72,8 +90,35 @@ function InquiryCard({
             Mobile: {inquiry.mobileNo}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-300">
-            City: {inquiry.city}
+            Location: {inquiry.city}, {inquiry.state} - {inquiry.pincode}
           </p>
+
+          <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 border p-2 rounded-lg mt-2">
+            <p className="">Service :</p>
+            {inquiry.inquiryCategories?.length > 0 && (
+              <>
+                <ul className="  ">
+                  {inquiry.inquiryCategories.map((cat, idx) => (
+                    <li key={idx}>
+                      {cat.category?.name || "Unnamed Category"}
+                    </li>
+                  ))}
+                </ul>
+                <FaArrowRightLong className="text-2xl text-gray-500" />
+                <ul className="">
+                  {inquiry.inquirySubCategories.map((sub, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-2 bg-blue-100 text-blue-800 text-sm font-medium rounded-full dark:bg-blue-900 dark:text-blue-300"
+                    >
+                      {sub.subCategory?.subCategoryName} — ₹
+                      {sub.subCategory?.price}
+                    </span>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <IoIosArrowDown

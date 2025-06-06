@@ -4,23 +4,13 @@ import { z } from "zod";
 import { InquiryStatus, Priority } from "@prisma/client";
 
 // Schema for validation
-export const inquiryUpdateSchema = z.object({
+const inquiryUpdateSchema = z.object({
   customerName: z.string().min(2),
   mobileNo: z.string().regex(/^\d{10}$/),
   city: z.string().min(2),
-  service: z.string().min(2).nullable(),
-  callbackTime: z
-    .string()
-    .regex(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/,
-      "Invalid datetime format (YYYY-MM-DDTHH:MM)"
-    ),
-  appointmentTime: z
-    .string()
-    .regex(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/,
-      "Invalid datetime format (YYYY-MM-DDTHH:MM)"
-    ),
+  service: z.string().min(2).nullable().optional(),
+  callbackTime: z.string().datetime({ offset: true }).optional().nullable(),
+  appointmentTime: z.string().datetime({ offset: true }).optional().nullable(),
   amount: z.string().regex(/^\d+$/),
   status: z.nativeEnum(InquiryStatus),
   priority: z.nativeEnum(Priority),
@@ -135,8 +125,10 @@ export async function PUT(
       inquirySubCategories = [],
     } = parsed.data;
 
-    const parsedCallback = new Date(callbackTime);
-    const parsedAppointment = new Date(appointmentTime);
+    const parsedCallback = callbackTime ? new Date(callbackTime) : null;
+    const parsedAppointment = appointmentTime
+      ? new Date(appointmentTime)
+      : null;
 
     const updatedInquiry = await prisma.inquiry.update({
       where: { id },
@@ -164,12 +156,16 @@ export async function PUT(
         cancelReason,
         engineerId,
         inquiryCategories: {
-          set: [],
-          connect: inquiryCategories.map((id) => ({ id })),
+          deleteMany: { inquiryId: id },
+          create: inquiryCategories.map((categoryId: string) => ({
+            category: { connect: { id: categoryId } },
+          })),
         },
         inquirySubCategories: {
-          set: [],
-          connect: inquirySubCategories.map((id) => ({ id })),
+          deleteMany: { inquiryId: id },
+          create: inquirySubCategories.map((subCategoryId: string) => ({
+            subCategory: { connect: { id: subCategoryId } },
+          })),
         },
       },
       include: {
