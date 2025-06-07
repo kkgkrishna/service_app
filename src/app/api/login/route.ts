@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { sign } from "jsonwebtoken";
-import prisma from "@/lib/prisma"; // Make sure this path is correct
+import prisma from "@/lib/prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
+if (!JWT_SECRET)
   throw new Error("JWT_SECRET is not set in environment variables");
-}
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -34,9 +33,12 @@ export async function POST(request: Request) {
 
     const { email, password } = validation.data;
 
-    // ⛏ Fetch user from MongoDB using Prisma
+    // ⛏ Fetch user and permissions
     const user = await prisma.user.findUnique({
       where: { email },
+      include: {
+        permissions: true,
+      },
     });
 
     if (!user || !user.password) {
@@ -54,27 +56,31 @@ export async function POST(request: Request) {
       );
     }
 
-    // 🔐 Generate JWT
+    const permissionList = user.permissions.map((p) => p.permission);
+
+    // 🔐 Create JWT with permissions
     const token = sign(
       {
         userId: user.id,
         email: user.email,
         name: user.name,
         role: user.role,
+        permissions: permissionList,
       },
       JWT_SECRET as string,
       { expiresIn: "1d" }
     );
 
-    // 🍪 Set secure cookie
+    // 🍪 Return token and user with permissions
     const response = NextResponse.json({
       message: "Login successful",
-      token: token,
+      token,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
         role: user.role,
+        permissions: permissionList,
       },
     });
 
@@ -82,7 +88,7 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24,
     });
 
     return response;

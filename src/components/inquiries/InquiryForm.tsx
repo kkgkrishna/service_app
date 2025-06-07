@@ -14,10 +14,12 @@ function InquiryForm({
   isOpen,
   onClose,
   mode,
+  refetchInquiries,
 }: {
-  isOpen: boolean; 
+  isOpen: boolean;
   onClose: () => void;
   mode: "add" | "edit";
+  refetchInquiries: () => void;
 }) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<any>("");
   const [stateName, setStateName] = useState<any>("");
@@ -104,16 +106,17 @@ function InquiryForm({
     if (!validateForm()) return;
     console.log("inquiryData", inquiryData);
 
-    // try {
-    //   const response = await createInquiry(inquiryData);
-    //   console.log("response", response);
-    //   if (response.data) {
-    //     toast.success("Inquiry created successfully");
-    //     onClose();
-    //   }
-    // } catch (error) {
-    //   console.log("error", error);
-    // }
+    try {
+      const response = await createInquiry(inquiryData);
+      console.log("response", response);
+      if (response.data) {
+        toast.success("Inquiry created successfully");
+        onClose();
+        refetchInquiries();
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   return (

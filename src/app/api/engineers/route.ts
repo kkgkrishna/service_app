@@ -66,6 +66,9 @@ export async function POST(req: Request) {
       },
     });
 
+    //create user as engineer
+    
+
     return NextResponse.json(newEngineer, { status: 201 });
   } catch (error: any) {
     console.error("POST /engineers failed:", error?.message || error);

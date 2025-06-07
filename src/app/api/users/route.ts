@@ -10,6 +10,7 @@ export async function GET() {
         email: true,
         name: true,
         role: true,
+        isActive: true,
         createdAt: true,
       },
     });
@@ -24,7 +25,13 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { email, password, name, role } = await request.json();
+    const {
+      email,
+      password,
+      name,
+      role,
+      isActive = true,
+    } = await request.json();
     const hashedPassword = await hash(password, 12);
 
     const user = await prisma.user.create({
@@ -33,12 +40,14 @@ export async function POST(request: Request) {
         password: hashedPassword,
         name,
         role,
+        isActive,
       },
     });
 
     const { password: _, ...userWithoutPassword } = user;
     return NextResponse.json(userWithoutPassword);
   } catch (error) {
+    console.error("User creation error:", error);
     return NextResponse.json(
       { error: "Failed to create user" },
       { status: 500 }

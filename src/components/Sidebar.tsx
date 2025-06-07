@@ -13,6 +13,8 @@ import {
   MdDarkMode,
 } from "react-icons/md";
 import { cn } from "@/lib/utils";
+import { getPermissions } from "../../Utils/Utils";
+import { IMPLICIT_PERMISSIONS } from "@/constant/PermissionConstant";
 
 interface SidebarProps {
   onThemeToggle: () => void;
@@ -21,18 +23,21 @@ interface SidebarProps {
 
 export default function Sidebar({ onThemeToggle, currentTheme }: SidebarProps) {
   const pathname = usePathname();
-
+  const Permissions = getPermissions();
+  const role = localStorage.getItem("role");
   const menuItems = [
     {
       title: "Dashboard",
       icon: <MdDashboard className="w-6 h-6" />,
       path: "/dashboard",
     },
+    // Permissions.includes("CREATE_INQUIRY") && {
     {
       title: "Manage Inquiry",
       icon: <MdMessage className="w-6 h-6" />,
       path: "/inquiries",
     },
+    // },
     {
       title: "Manage Collection",
       icon: <MdPayments className="w-6 h-6" />,
@@ -47,6 +52,16 @@ export default function Sidebar({ onThemeToggle, currentTheme }: SidebarProps) {
       title: "Manage Stock User",
       icon: <MdPerson className="w-6 h-6" />,
       path: "/stock-users",
+    },
+    {
+      title: "Manage Service Partner",
+      icon: <MdPerson className="w-6 h-6" />,
+      path: "/service-partners",
+    },
+    {
+      title: "Manage Permission",
+      icon: <MdPerson className="w-6 h-6" />,
+      path: "/permissions",
     },
   ];
 
@@ -82,10 +97,13 @@ export default function Sidebar({ onThemeToggle, currentTheme }: SidebarProps) {
       {/* Navigation */}
       <nav className="h-[calc(100vh-4rem)] py-4">
         <ul className="space-y-1 px-2">
-          {menuItems.map((item) => {
+          {menuItems.filter(Boolean).map((item: any, index) => {
+            if (!item?.path) return null; // ⛔️ Skip if path is missing
+
             const isActive = pathname.startsWith(item.path);
+
             return (
-              <li key={item.path}>
+              <li key={index}>
                 <Link
                   href={item.path}
                   className={cn(

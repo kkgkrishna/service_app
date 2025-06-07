@@ -76,6 +76,13 @@ export const stateCityMap: Record<string, string[]> = {
   ],
 };
 
+export const getPermissions = (): string[] => {
+  if (typeof window !== "undefined") {
+    return JSON.parse(localStorage.getItem("permissions") || "[]");
+  }
+  return [];
+};
+
 export const states = Object.keys(stateCityMap);
 
 // Optional: Helper function to get cities by state
@@ -114,4 +121,22 @@ export function getUserFromToken(): any | null {
   const token = getToken();
   if (!token) return null;
   return decodeToken(token);
+}
+
+export function formatDateTime(input: string): { date: string; time: string } {
+  const date = new Date(input);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "long" });
+  const year = date.getFullYear();
+
+  const hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+
+  return {
+    date: `${day} ${month} ${year}`,
+    time: `${String(hour12).padStart(2, "0")}:${minutes} ${ampm}`,
+  };
 }

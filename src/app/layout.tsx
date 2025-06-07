@@ -4,7 +4,7 @@ import { Inter, Josefin_Sans } from "next/font/google";
 import "./globals.css";
 import { Constants } from "@/constant/constant";
 import ClientProvider from "@/components/Provider/ClientProvider";
-
+import { AuthProvider } from "@/context/AuthContext";
 const inter = Inter({ subsets: ["latin"] });
 
 const josefin = Josefin_Sans({
@@ -26,7 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} ${josefin.variable} font-josefin`}>
-        <ClientProvider>{children}</ClientProvider>
+        <AuthProvider>
+          <ClientProvider>{children}</ClientProvider>
+        </AuthProvider>
       </body>
     </html>
   );

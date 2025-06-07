@@ -8,14 +8,33 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  inquiries Inquiry[] @relation("UserToInquiries")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String           @unique
+  password        String
+  role            Role             @default(USER)
+  isActive        Boolean          @default(true) // ✅ Added field
+  inquiries       Inquiry[]        @relation("UserToInquiries")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  serviceLocation ServiceLocation[] 
+  permissions UserPermission[] @relation("UserPermissions")
+}
+
+model UserPermission {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String      @db.ObjectId
+  permission Permission
+
+  user       User        @relation("UserPermissions", fields: [userId], references: [id])
+}
+
+
+type ServiceLocation {
+  state    String
+  city     String
+  pincodes String[] @default([])
 }
 
 model Inquiry {
@@ -151,4 +170,84 @@ enum Priority {
 enum Role {
   USER
   ADMIN
+  ENGINEER
+  SUPER_ADMIN
+  SERVICE_PROVIDER
+
+}
+
+
+enum Permission {
+  // 🔧 Inquiry Management
+  CREATE_INQUIRY
+  VIEW_OWN_INQUIRIES
+  VIEW_ALL_INQUIRIES
+  EDIT_INQUIRY
+  DELETE_INQUIRY
+  ASSIGN_ENGINEER
+  CHANGE_INQUIRY_STATUS
+  CANCEL_INQUIRY
+  VIEW_ASSIGNED_INQUIRIES
+
+  // 👨‍🔧 Engineer Management
+  CREATE_ENGINEER
+  VIEW_ENGINEERS
+  EDIT_ENGINEER
+  DELETE_ENGINEER
+  ASSIGN_CATEGORY_TO_ENGINEER
+
+  // 👥 User Management
+  CREATE_USER
+  VIEW_USERS
+  EDIT_USER
+  DELETE_USER
+  RESET_USER_PASSWORD
+
+  // 📊 Dashboard & Analytics
+  VIEW_DASHBOARD
+  VIEW_DAILY_STATS
+  VIEW_MONTHLY_STATS
+  VIEW_INQUIRY_TRENDS
+  EXPORT_REPORTS
+
+  // 📂 Category Management
+  CREATE_CATEGORY
+  VIEW_CATEGORIES
+  EDIT_CATEGORY
+  DELETE_CATEGORY
+  CREATE_SUBCATEGORY
+  VIEW_SUBCATEGORIES
+  EDIT_SUBCATEGORY
+  DELETE_SUBCATEGORY
+  SET_SUBCATEGORY_PRICING
+
+  // 💰 Collection & Finance
+  VIEW_COLLECTIONS
+  RECORD_COLLECTION
+  SUBMIT_COLLECTION
+  GENERATE_INVOICE
+  VIEW_INVOICES
+
+  // 🛠️ System & Configuration
+  MANAGE_ROLES
+  MANAGE_PERMISSIONS
+  SYSTEM_SETTINGS
+  VIEW_LOGS
+  ACCESS_API_KEYS
+
+  // 📝 Feedback & Notes
+  VIEW_FEEDBACK
+  RESPOND_TO_FEEDBACK
+  DELETE_FEEDBACK
+  ADD_INTERNAL_NOTES
+  VIEW_INTERNAL_NOTES
+
+  // 🌐 Location & Coverage
+  MANAGE_SERVICE_LOCATIONS
+  VIEW_SERVICE_LOCATIONS
+
+  // 🔐 Security
+  LOGIN_AS_USER
+  FORCE_LOGOUT_USER
+  VIEW_LOGIN_HISTORY
 }

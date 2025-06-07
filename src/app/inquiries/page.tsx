@@ -411,6 +411,7 @@ export default function InquiriesPage() {
           isOpen={isAddInquiryFormOpen}
           onClose={() => setIsAddInquiryFormOpen(false)}
           mode={modalMode}
+          refetchInquiries={refetchInquiries}
         />
       )}
     </DashboardLayout>

@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import AuthCard from "@/components/auth/AuthCard";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
+import { log } from "console";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,6 +19,7 @@ export default function LoginPage() {
     rememberMe: false,
   });
 
+  const { login, logout, hasRole, hasPermission, user } = useAuth();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -42,8 +45,7 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
-
-      // Debug logging
+      login(data.user);
       console.log("Login Response Status:", response.status);
       console.log("Login Response:", data);
 
@@ -61,6 +63,11 @@ export default function LoginPage() {
 
       if (data.token) {
         localStorage.setItem("auth_token", data.token);
+        localStorage.setItem(
+          "permissions",
+          JSON.stringify(data.user.permissions)
+        );
+        localStorage.setItem("role", data.user.role);
       }
 
       // Get the redirect path from URL or default to dashboard
